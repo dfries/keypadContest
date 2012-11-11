@@ -1,0 +1,84 @@
+uC, originally an atmel AT89C2051 (intel 8051 compatible)
+pin names here are per atmel attiny2313 convention (pin-compatible), because 
+that's what I plan on swapping in.
+
+ 1    RESET
+ 2    RXD    U6 pin 12 Recv1Out
+ 3    TXD    U6 pin 11 Trans1In
+ 4    xtal
+ 5    xtal
+ 6    PD2    U5 LatchEnable
+ 7    PD3    U3 LatchEnable
+ 8    PD4    U4 OutputEnable
+ 9    PD5    U2 OutputEnable
+10    GND
+
+11    PD6    U6 pin 10 Trans2In
+12    PB0    bus 0
+13    PB1    bus 1
+14    PB2    bus 2
+15    PB3    bus 3
+16    PB4    bus 4
+17    PB5    bus 5
+18    PB6    bus 6
+19    PB7    bus 7
+20    VCC
+
+
+Crystal Y1 is 11.0592 mhz.
+
+
+Q1 DS1833 reset chip
+	This 3-lead (TO-92) device controls the reset line.  On power-up, it holds 
+	reset high.  It waits for ~1/2 second after power on, then sets the reset 
+	line low.  This works fine for the AT89C2051, which has an active-high 
+	reset.  However, it prevents an attiny2313 from working in this board, as 
+	the attiny has an active-low reset.  To fix this, clip the center lead on 
+	Q1, or just remove the device altogether.
+
+
+U2 74HCT573 octal latch
+	This latch is for the switches.
+	LatchEnable is tied high, which means that its always reading from its 
+	Dx lines.
+	Input pins are connected to the switches.
+	Output pins are connected to the bus.
+
+U3 74HCT573 octal latch
+	This latch is for the LEDs.
+	OutputEnable is tied low, which means its outputs are always enabled.
+	Input pins are connected to the bus.
+	Output pins go to the LEDs.
+
+U4 74HCT573 octal latch
+	This latch is for the switches.
+	LatchEnable is tied high, which means that its always reading from its 
+	Dx lines.
+	Input pins are connected to the switches.
+	Output pins are connected to the bus.
+
+U5 74HCT573 octal latch
+	This latch is for the LEDs.
+	OutputEnable is tied low, which means its outputs are always enabled.
+	Input pins are connected to the bus.
+	Output pins go to the LEDs.
+
+U6 SIPEX SP3232 RS-232 tranceiver
+	T1, T2, and R1 are used.  R2 does not appear to be used.
+	
+J1 10-pin header
+	pin 1 is connected to the input of the voltage regulator
+		("Data Carrier Detect" per the rs-232 standard)
+	pin2 ("RxD" per rs-232) is connected to pin8 of U6 ("R2IN")
+		double wtf:
+			1) isn't RxD from the perspective of the computer, not the device?
+			2) R2OUT isn't connected to the uC!
+	pin3 ("TxD" per rs-232) is connected to pin13 of U6 ("R1IN")
+	pin5 ("GND" per rs-232) is connected to pin14 of U6 ("T1OUT")
+		wtf?
+	pin7 ("" per rs-232) is connected to pin7 of U6 ("T2OUT")
+	pin8 is connected to R15 (1K), which is connected to U2's input D7 (weird)
+	pin9 ("" per rs-232) is connected to gnd
+	
+	
+
