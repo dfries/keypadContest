@@ -18,6 +18,8 @@ Copyright 2012 Andrew Sampson.  Released under the GPL v2.  See COPYING.
 #define SW_A_READ_OUTPUTENABLE PD4
 #define SW_B_READ_OUTPUTENABLE PD5
 
+#define VALID_SWITCHES_MASK 0b1111111111
+
 /*
 Uses port B to talk to the LED latches.
 Upon exiting, leaves port B in high-impedence state.
@@ -149,7 +151,7 @@ int main(void)
 	uint16_t switches = 0;
 	// read switches and update leds (momentary style), 
 	// until user presses buttons 1 and 5
-	while( !(switches & 0b0000000000010001) )
+	while( (switches & VALID_SWITCHES_MASK) != 0b0000010001 )
 	{
 		switches = readSwitches();
 		writeLEDs( switches );
