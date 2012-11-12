@@ -63,15 +63,22 @@ uint16_t readSwitches( void )
 	
 	// enable bus output for the first bank of switches
 	PORTD &= ~(1 << SW_A_READ_OUTPUTENABLE);
-_delay_ms( 1 );
+	// I've found that a delay is necessary in order for the switch values 
+	// to appear on the bus.  This delay could possibly be shortened to 
+	// just a few nops.
+	_delay_ms( 1 );
 	// grab the values from port B
 	result |= PINB;
 	// disable bus output for the switches
 	PORTD |= (1 << SW_A_READ_OUTPUTENABLE);
+	
 	// enable bus output for the second bank of switches
 	PORTD &= ~(1 << SW_B_READ_OUTPUTENABLE);
+	// I've found that a delay is necessary in order for the switch values 
+	// to appear on the bus.  This delay could possibly be shortened to 
+	// just a few nops.
+	_delay_ms( 1 );
 	// grab the values from port B
-_delay_ms( 1 );
 	result |= (PINB << 8);
 	// disable bus output for the switches
 	PORTD |= (1 << SW_B_READ_OUTPUTENABLE);
@@ -148,12 +155,25 @@ int main(void)
 		writeLEDs( switches );
 	}
 	
+	uint16_t switchDebounce;
+	uint16_t leds = 0;
 	// read switches and toggle leds
 	while( 1 )
 	{
-		// xor
-		switches ^= readSwitches();
-		writeLEDs( switches );
+		// Simple debounce: read the switches, pause, and read them again.
+		// Only count the buttons that were pressed at both samplings as 
+		// being pressed.
+		switchDebounce = readSwitches();
+		_delay_ms( 10 );
+		switchDebounce &= readSwitches();
+		
+		// use xor to toggle
+		// "(switches ^ switchDebounce) & switchDebounce" = 
+		// "the switches that changed and are now active"
+		leds ^= (switches ^ switchDebounce) & switchDebounce;
+		writeLEDs( leds );
+		
+		switches = switchDebounce;
 	}
 	
 	return 0;
