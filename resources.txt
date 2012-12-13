@@ -1,0 +1,32 @@
+AVR References
+
+Basic:
+    Bit manipulation: http://www.avrfreaks.net/index.php?name=PNphpBB2&file=viewtopic&t=37871
+    I/O operations: http://iamsuhasm.wordpress.com/tutsproj/avr-gcc-tutorial/
+    Storing constants in flash: http://www.avrfreaks.net/index.php?name=PNphpBB2&file=viewtopic&t=38003
+
+Intermediate:
+    Efficient AVR C coding: http://www.atmel.com/Images/doc1497.pdf (syntax differences from GCC)
+    EEPROM: http://www.avrfreaks.net/index.php?name=PNphpBB2&file=viewtopic&t=38417
+    Timers: http://www.avrfreaks.net/index.php?name=PNphpBB2&file=viewtopic&t=50106
+
+Advanced?:
+    Interrupts: http://www.avrfreaks.net/index.php?name=PNphpBB2&file=viewtopic&t=89843
+    Inline assembly: http://www.nongnu.org/avr-libc/user-manual/inline_asm.html
+    Multitasking: http://www.avrfreaks.net/index.php?name=PNphpBB2&file=viewtopic&t=95490
+
+Misc/Resources:
+    ATtiny2313/4313 datasheet: http://www.atmel.com/images/doc8246.pdf
+    AVR forum with active community: http://www.avrfreaks.net/index.php?name=PNphpBB2&file=index
+    avr-libc FAQ: http://www.nongnu.org/avr-libc/user-manual/FAQ.html
+    RS232 tranceiver datasheet: http://www.datasheetcatalog.org/datasheet/sipex/SP3232.pdf
+
+Tips/gotchyas:
+    Use the smallest-sized data type that you need.
+    Don't change the fuses!
+    When changing fuses, don't change the reset disable fuse or the clock source fuses!
+    If using interrupts understand the concept of "atomicity" and when to use the keyword "volatile".
+    Don't use floating point math!
+    Don't divide!
+    If dividing by a constant, do it by multiplying by its reciprocal (google "binary scaling"--also used for multiplying by non-integer).
+    Need some extra speed?  Look up "OSCCAL" in the attiny2313/4313 datasheet.
