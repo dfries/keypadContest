@@ -4,7 +4,7 @@ CC=avr-gcc
 CFLAGS=-g -Os -Wall -mcall-prologues -mmcu=$(MCU)
 OBJ2HEX=avr-objcopy
 AVRDUDE=avrdude
-TARGET=keypad-blinky
+TARGET=keypad-input
 
 program : $(TARGET).hex
 	$(AVRDUDE) -p $(AVRDUDEMCU) -c usbtiny -U flash:w:$(TARGET).hex
