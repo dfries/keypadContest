@@ -67,18 +67,17 @@ U6 SIPEX SP3232 RS-232 tranceiver
 	T1, T2, and R1 are used.  R2 does not appear to be used.
 	
 J1 10-pin header
-	pin 1 is connected to the input of the voltage regulator
-		("Data Carrier Detect" per the rs-232 standard)
-	pin2 ("RxD" per rs-232) is connected to pin8 of U6 ("R2IN")
-		double wtf:
-			1) isn't RxD from the perspective of the computer, not the device?
-			2) R2OUT isn't connected to the uC!
-	pin3 ("TxD" per rs-232) is connected to pin13 of U6 ("R1IN")
-	pin5 ("GND" per rs-232) is connected to pin14 of U6 ("T1OUT")
-		wtf?
-	pin7 ("" per rs-232) is connected to pin7 of U6 ("T2OUT")
-	pin8 is connected to R15 (1K), which is connected to U2's input D7 (weird)
-	pin9 ("" per rs-232) is connected to gnd
-	
-	
+	the ribbon cable is wired weird.  here's the J1 header with the DB9 pin numbers.
 
+1 6
+2 7
+3 8
+4 9
+5 x
+
+
+             Vin  1 6  U6 pin8 "R2IN"
+U6 pin13 "R1IN"   2 7
+U6 pin14 "T1OUT"  3 8
+U6 pin7 "T2OUT"   4 9  R15 (1K), which is connected to U2's input D7 (weird)
+             Gnd  5 x
