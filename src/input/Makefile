@@ -5,8 +5,8 @@ CFLAGS=-g -Os -Wall -mcall-prologues -mmcu=$(MCU)
 ELF2HEX=avr-objcopy
 OBJDUMP=avr-objdump
 AVRDUDE=avrdude
-TARGET=keypad-input
-SIZE = avr-size
+TARGET=input
+SIZE=avr-size
 
 # always build
 .PHONY: all program
