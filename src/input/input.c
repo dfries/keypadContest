@@ -48,7 +48,6 @@ void writeLEDs( uint16_t values )
 	PORTB = 0; // disable internal pull-ups
 }
 
-
 /*
 Uses port B to talk to the switch latches.
 Upon exiting, leaves port B in high-impedence state.
@@ -136,6 +135,12 @@ int main(void)
 		}
 	}
 
+	for(uint16_t binary=0; binary<1024; ++binary)
+	{
+			writeLEDs( binary );
+			_delay_ms( 100 );
+	}
+
 	// blink all leds 2 times
 	writeLEDs( 0x0000 );
 	_delay_ms( 100 );
@@ -146,7 +151,17 @@ int main(void)
 	writeLEDs( 0xffff );
 	_delay_ms( 100 );
 	writeLEDs( 0x0000 );
-	
+
+	// blink all leds 2 times
+	writeLEDs( 0x0000 );
+	_delay_ms( 40 );
+	writeLEDs( 0xffff );
+	_delay_ms( 40 );
+	writeLEDs( 0x0000 );
+	_delay_ms( 40 );
+	writeLEDs( 0xffff );
+	_delay_ms( 41 );
+	writeLEDs( 0x0000 );
 	
 	uint16_t switches = 0;
 	// read switches and update leds (momentary style), 
