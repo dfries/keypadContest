@@ -1,7 +1,7 @@
 MCU=attiny2313
 AVRDUDEMCU=attiny2313
 CC=avr-gcc
-CFLAGS=-g -Os -Wall -mcall-prologues -mmcu=$(MCU)
+CFLAGS=-g -Os -Wall -mcall-prologues -mmcu=$(MCU) -std=gnu99
 ELF2HEX=avr-objcopy
 OBJDUMP=avr-objdump
 AVRDUDE=avrdude
