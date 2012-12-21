@@ -167,6 +167,15 @@ int main(void)
 	while( 1 ) {}
 	*/
 
+	// Verify CPU speed and delay times, should take 16 seconds to
+	// execute.
+	for(uint8_t i=0; i<8; ++i)
+	{
+		writeLEDs(0b1111100000 | CLKPR);
+		_delay_ms( 1000 );
+		writeLEDs(CLKPR);
+		_delay_ms( 1000 );
+	}
 
 	for(uint16_t binary=0; binary<1024; ++binary)
 	{
