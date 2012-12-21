@@ -167,21 +167,6 @@ int main(void)
 	while( 1 ) {}
 	*/
 
-	// led chaser sequence
-	uint8_t i;
-	for( i = 0 ; i < 2; i++ )
-	{
-		uint16_t leds = 1;
-		// stop after all 10 leds have been illuminated
-		while( leds < (1<<11) )
-		{
-			writeLEDs( leds );
-
-			_delay_ms( 100 );
-
-			leds = leds << 1;
-		}
-	}
 
 	for(uint16_t binary=0; binary<1024; ++binary)
 	{
@@ -199,7 +184,31 @@ int main(void)
 					(mid & 0b10000000) >> 5;
 			uint16_t out = (low | mid) | high<<8;
 			writeLEDs( out );
-			_delay_ms( 100 );
+			_delay_ms( 10 );
+	}
+
+	for(uint8_t prescale=0; prescale<=CPU_31250Hz; ++prescale)
+	{
+		uint8_t i;
+		int delay=128>>prescale;
+		CPU_PRESCALE(prescale);
+		writeLEDs(0b1111100000 | prescale);
+		for(i=0; i<delay; ++i)
+			_delay_ms(100);
+		// led chaser sequence
+		for( i = 0 ; i < 8; i++ )
+		{
+			uint16_t leds = 1;
+			// stop after all 10 leds have been illuminated
+			while( leds < (1<<11) )
+			{
+				writeLEDs( leds );
+
+				_delay_ms( 40 );
+
+				leds = leds << 1;
+			}
+		}
 	}
 
 	// blink all leds 2 times
