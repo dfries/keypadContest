@@ -137,7 +137,20 @@ int main(void)
 
 	for(uint16_t binary=0; binary<1024; ++binary)
 	{
-			writeLEDs( binary );
+			uint8_t low = binary >> 8;
+			low = low >> 1 | (low&1) << 1;
+			uint8_t high = binary & 3;
+			high = high >> 1 | (high&1) << 1;
+			uint8_t mid = binary;
+			mid =
+					(mid & 0b00000100) << 5 |
+					(mid & 0b00001000) << 3 |
+					(mid & 0b00010000) << 1 |
+					(mid & 0b00100000) >> 1 |
+					(mid & 0b01000000) >> 3 |
+					(mid & 0b10000000) >> 5;
+			uint16_t out = (low | mid) | high<<8;
+			writeLEDs( out );
 			_delay_ms( 100 );
 	}
 
