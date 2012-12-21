@@ -8,6 +8,8 @@ AVRDUDE=avrdude
 TARGET=input
 SIZE=avr-size
 
+CFLAGS:=$(CFLAGS) -DF_CPU=8000000
+
 # always build
 .PHONY: all program
 
