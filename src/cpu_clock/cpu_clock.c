@@ -180,7 +180,7 @@ int main(void)
 
 		// led chaser sequence
 		writeLEDs(leds);
-		_delay_ms(20);
+		//_delay_ms(20);
 		leds = leds << 1;
 		if(leds >= 1<<10)
 			leds=1;
