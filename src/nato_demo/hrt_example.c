@@ -458,17 +458,19 @@ void timer1_init(void)
 //  8-bit LFSR 
 uint8_t lfsr_prand(void)
 {
-  uint8_t prand; // Psuedo-random value.
+  // Psuedo-random value.
+  static uint8_t prand;
 
   // Retrieve the seed from EEPROM.
-  prand = eeprom_read_byte(&storedSeed); 
+  //prand = eeprom_read_byte(&storedSeed);
 
   // Calculate the new LFSR value.
   prand = (prand << 1) + (1 &
            ((prand >> 1) + (prand >> 2) + (prand >> 3) + (prand >> 7)));
 
   // Store the new seed in the EEPROM.
-  eeprom_write_byte (&storedSeed, prand) ;
+// redo the random number generator and without lots of eeprom writes
+//  eeprom_write_byte (&storedSeed, prand);
 
   // Return the pseudo-random value.
   return prand;
