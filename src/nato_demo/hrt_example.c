@@ -35,6 +35,9 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
+#define F_CPU 1000000UL
+#include <util/delay.h>
+#undef F_CPU
 
 #define F_CPU 11059200UL
 #define LED_A_WRITE_LATCH PD2
@@ -290,7 +293,8 @@ uint16_t EEMEM notePeriods[]={
 
 // Used for inter-task communications about the state of song toggled
 //  (NO_CHANGE, SONG_ON, SONG_OFF).
-uint8_t songStateChanged = SONG_OFF;
+//uint8_t songStateChanged = SONG_OFF;
+uint8_t songStateChanged = SONG_ON;
 
 // Used for inter-task communications about a new note being played.
 uint8_t newNote = 0;
@@ -310,6 +314,22 @@ int main(void)
 
   // Initialize all MCU hardware.
   init_devices();
+
+  for(;;)
+  {
+    for(uint16_t i=50; i<16000; ++i)
+    {
+      PORTD ^= SPKR_MASK;
+      lightStates = i;
+      task_2_write_LEDs();
+#undef F_CPU
+#define F_CPU 1000000UL
+      for(uint16_t j=0; j<i; ++j)
+        _delay_us(1);
+#undef F_CPU
+#define F_CPU 11059200UL
+    }
+  }
 
   // Start the active tasks
   taskBits = 0x0F; // Start tasks 0-3; change value if more tasks are needed.
