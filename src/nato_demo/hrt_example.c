@@ -222,74 +222,74 @@ uint8_t EEMEM melody[]={
 //  need to be changed (see CS12:0 in the datasheet).
 uint16_t EEMEM notePeriods[]={
  //    Cycles-1  Note Frequency Index
-    // 63333, // F2   87.31     
-    // 59779, // F#2  92.50     
-    // 56424, // G2   98.00     
-    // 53256, // G#2  103.83    
-    // 50269, // A2   110.00    
-    // 47448, // Bb2  116.54    
-    // 44785, // B2   123.47    
-    // 42272, // C3   130.81    
-    // 39899, // C#3  138.59    
-    // 37660, // D3   146.83    
-    // 35546, // Eb3  155.56    
-    // 33551, // E3   164.81    
-    // 31668, // F3   174.61    
-    // 29890, // F#3  185.00    
-    // 28212, // G3   196.00    
-    // 26629, // G#3  207.65    
-    // 25135, // A3   220.00    
-    // 23724, // Bb3  233.08    
-    // 22392, // B3   246.94    
-    // 21135, // C4   261.63    
-    // 19949, // C#4  277.18    
-    // 18829, // D4   293.67    
-    // 17773, // Eb4  311.13    
-    // 16775, // E4   329.63    
+    // 63333, // F2   87.31
+    // 59779, // F#2  92.50
+    // 56424, // G2   98.00
+    // 53256, // G#2  103.83
+    // 50269, // A2   110.00
+    // 47448, // Bb2  116.54
+    // 44785, // B2   123.47
+    // 42272, // C3   130.81
+    // 39899, // C#3  138.59
+    // 37660, // D3   146.83
+    // 35546, // Eb3  155.56
+    // 33551, // E3   164.81
+    // 31668, // F3   174.61
+    // 29890, // F#3  185.00
+    // 28212, // G3   196.00
+    // 26629, // G#3  207.65
+    // 25135, // A3   220.00
+    // 23724, // Bb3  233.08
+    // 22392, // B3   246.94
+    // 21135, // C4   261.63
+    // 19949, // C#4  277.18
+    // 18829, // D4   293.67
+    // 17773, // Eb4  311.13
+    // 16775, // E4   329.63
        15834, // F4   349.23    0x0
-    // 14945, // F#4  369.99    
+    // 14945, // F#4  369.99
        14106, // G4   392.00    0x1
        13314, // G#4  415.31    0x2
        12567, // A4   440.00    0x3
        11862, // Bb4  466.16    0x4
        11196, // B4   493.88    0x5
        10568, // C5   523.25    0x6
-    // 9975,  // C#5  554.37    
+    // 9975,  // C#5  554.37
        9415,  // D5   587.33    0x7
        8886,  // Eb5  622.25    0x8
        8388,  // E5   659.26    0x9
-    // 7917,  // F5   698.46    
+    // 7917,  // F5   698.46
        7473,  // F#5  739.99    0xA
        7053}; // G5   783.99    0xB
-    // 6657,  // G#5  830.61    
-    // 6284,  // A5   880.00    
-    // 5931,  // Bb5  932.33    
-    // 5598,  // B5   987.77    
-    // 5284,  // C6   1046.50   
-    // 4987,  // C#6  1108.73   
-    // 4707,  // D6   1174.66   
-    // 4443,  // Eb6  1244.51   
-    // 4194,  // E6   1318.51   
-    // 3958,  // F6   1396.91   
-    // 3736,  // F#6  1479.98   
-    // 3527,  // G6   1567.98   
-    // 3329,  // G#6  1661.22   
-    // 3142,  // A6   1760.00   
-    // 2965,  // Bb6  1864.66   
-    // 2799,  // B6   1975.53   
-    // 2642,  // C7   2093.00   
-    // 2494,  // C#7  2217.46   
-    // 2354,  // D7   2349.32   
-    // 2222,  // Eb7  2489.02   
-    // 2097,  // E7   2637.02   
-    // 1979,  // F7   2793.83   
-    // 1868,  // F#7  2959.96   
-    // 1763,  // G7   3135.96   
-    // 1664,  // G#7  3322.44   
-    // 1571,  // A7   3520.00   
-    // 1483,  // Bb7  3729.31   
-    // 1400,  // B7   3951.07   
-    // 1321,  // C8   4186.01   
+    // 6657,  // G#5  830.61
+    // 6284,  // A5   880.00
+    // 5931,  // Bb5  932.33
+    // 5598,  // B5   987.77
+    // 5284,  // C6   1046.50
+    // 4987,  // C#6  1108.73
+    // 4707,  // D6   1174.66
+    // 4443,  // Eb6  1244.51
+    // 4194,  // E6   1318.51
+    // 3958,  // F6   1396.91
+    // 3736,  // F#6  1479.98
+    // 3527,  // G6   1567.98
+    // 3329,  // G#6  1661.22
+    // 3142,  // A6   1760.00
+    // 2965,  // Bb6  1864.66
+    // 2799,  // B6   1975.53
+    // 2642,  // C7   2093.00
+    // 2494,  // C#7  2217.46
+    // 2354,  // D7   2349.32
+    // 2222,  // Eb7  2489.02
+    // 2097,  // E7   2637.02
+    // 1979,  // F7   2793.83
+    // 1868,  // F#7  2959.96
+    // 1763,  // G7   3135.96
+    // 1664,  // G#7  3322.44
+    // 1571,  // A7   3520.00
+    // 1483,  // Bb7  3729.31
+    // 1400,  // B7   3951.07
+    // 1321,  // C8   4186.01
 
 // Used for inter-task communications about the state of song toggled
 //  (NO_CHANGE, SONG_ON, SONG_OFF).
@@ -363,9 +363,9 @@ void init_devices(void)
   //DDRB = 0; // Register initialized to zero, so this isn't needed.
 
   // Configure port D latch, enable, and speaker pins as output.
-  DDRD |= (1 << LED_A_WRITE_LATCH) | 
-           (1 << LED_B_WRITE_LATCH) | 
-           (1 << SW_A_READ_OUTPUTENABLE) | 
+  DDRD |= (1 << LED_A_WRITE_LATCH) |
+           (1 << LED_B_WRITE_LATCH) |
+           (1 << SW_A_READ_OUTPUTENABLE) |
            (1 << SW_B_READ_OUTPUTENABLE) |
            SPKR_MASK;
 
@@ -430,7 +430,7 @@ void timer0_init(void)
   //TCCR0B &= ~(1<<CS02); Was zeroed above; don't need to do it again.
   TCCR0B |= (1<<CS01) |
              (1<<CS00);
- 
+
   // Enable the TIMER0 interrupt.
   TIMSK |= (1<<OCIE0A);
 }
@@ -439,7 +439,7 @@ void timer0_init(void)
 //  Prescale = CLK/64; Mode = CTC
 void timer1_init(void)
 {
- 
+
   // Set CS12:0 to 0 to stop the timer while we set it up.
   //TCCR1B &= ~(1<<CS12); // Initialized to zero, so this isn't needed.
   //TCCR1B &= ~(1<<CS11); // Initialized to zero, so this isn't needed.
@@ -475,7 +475,7 @@ void timer1_init(void)
 }
 
 // Returns a pseudo-random value between 1 and 255 by using a period-maximal
-//  8-bit LFSR 
+//  8-bit LFSR
 uint8_t lfsr_prand(void)
 {
   // Psuedo-random value.
@@ -624,7 +624,7 @@ void task_0_read_switches(void)
   //  appear on the bus.  Datasheets suggest the propogation delay through the
   //  D-latch itself will be less than a quarter of a clock cycle, so there may
   //  be some capacitance in the circuit making this nop necessary.
-  asm volatile("nop"); 
+  asm volatile("nop");
 
   // Grab the values from port B
   currentSwitches = PINB;
@@ -636,7 +636,7 @@ void task_0_read_switches(void)
   PORTD &= ~(1 << SW_B_READ_OUTPUTENABLE);
 
   // Another wait.
-  asm volatile("nop"); 
+  asm volatile("nop");
 
   // Grab the values from port B
   currentSwitches |= (PINB << 8);
@@ -903,7 +903,7 @@ ISR(TIMER0_COMPA_vect)
 
   // TIMER0 has overflowed
   tickFlag = 1;
-} 
+}
 
 // This interrupt routine will automagically be called everytime TIMER1 has
 //  overflowed.  See timer1 stuff in init_devices() to see how the timer was
@@ -913,4 +913,4 @@ ISR(TIMER1_COMPA_vect)
 
   // Toggle the speaker pins to make a click.
   PORTD ^= SPKR_MASK;
-} 
+}
