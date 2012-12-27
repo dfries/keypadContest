@@ -8,20 +8,23 @@
 
 QT_FLAGS:=$(shell pkg-config --cflags QtGui)
 QT_LIBS:=$(shell pkg-config --libs QtGui)
-CXXFLAGS=-g -Wall -MMD -MP $(QT_FLAGS)
+CXXFLAGS=-g -Wall -std=c++11 -MMD -MP $(QT_FLAGS) -Iinclude -DF_CPU=8000000
 LD_LIBS=$(QT_LIBS)
 
-# Linking c++ not c code
-LINK.o=$(CXX) $(LDFLAGS) $(LD_LIBS) $(TARGET_ARCH)
-
-keypadalike: main.o SoftIO.o moc_SoftIO.o
+AVR_OBJ=../keypadContest/src/cpu_clock/cpu_clock.o
+keypadalike: $(AVR_OBJ) \
+	avr_util.o \
+	main.o SoftIO.o moc_SoftIO.o
 	$(LINK.o) -o $@ $^
-
-moc_%.cc: %.h
-	moc -o $@ $^
 
 .PHONY: clean
 clean:
 	rm -f *.d *.o moc_*.cc moc_*.d moc_*.o keypadalike
+
+moc_%.cc: %.h
+	moc -o $@ $^
+
+# Linking c++ not c code
+LINK.o=$(CXX) $(LDFLAGS) $(LD_LIBS) $(TARGET_ARCH)
 
 -include $(wildcard *.d)
