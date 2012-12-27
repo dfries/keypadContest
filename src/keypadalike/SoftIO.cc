@@ -11,14 +11,22 @@ Released under the GPL v2.  See COPYING.
 #include "SoftIO.h"
 #include <QPushButton>
 #include <QHBoxLayout>
+#include <QVBoxLayout>
 
 SoftIO::SoftIO()
 {
-	QHBoxLayout *layout=new QHBoxLayout;
+	QVBoxLayout *vlayout=new QVBoxLayout;
+	QHBoxLayout *hlayout=new QHBoxLayout;
 	for(int i=0; i<BUTTON_COUNT; ++i)
 	{
+		if(i==BUTTON_COUNT/2)
+		{
+			vlayout->addLayout(hlayout);
+			hlayout=new QHBoxLayout;
+		}
 		Buttons[i]=new QPushButton(QString("%1").arg(i));
-		layout->addWidget(Buttons[i]);
+		hlayout->addWidget(Buttons[i]);
 	}
-	setLayout(layout);
+	vlayout->addLayout(hlayout);
+	setLayout(vlayout);
 }
