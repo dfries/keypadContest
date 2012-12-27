@@ -23,6 +23,8 @@ SOFTWARE.
 #ifndef ATtiny2313_clock_H
 #define ATtiny2313_clock_H
 
+#include <avr/io.h>
+
 /* Clock prescaler, MHz, and change logic for the ATtiny2313 assuming the
  * internal 8 MHz oscillator is selected for the clock source.
  */
