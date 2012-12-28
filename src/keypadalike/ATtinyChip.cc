@@ -20,13 +20,27 @@ hardware buttons and LEDs.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _UTIL_DELAY_H
-#define _UTIL_DELAY_H
+#include "ATtinyChip.h"
 
-/* In hardware the delay comes from a fixed number of instructions.  An
- * interrupt doesn't cause an early termination.  It will cause the delay
- * to take that much more wlal clock time, which isn't emulated here.
- */
-void _delay_ms(int ms);
+const ATtinyChip& ATtinyChip::operator=(RegValue arg)
+{
+	Reg[arg.Reg] = arg.Value;
+	return *this;
+}
 
-#endif // _UTIL_DELAY_H
+const ATtinyChip& ATtinyChip::operator|=(RegValue arg)
+{
+	Reg[arg.Reg] |= arg.Value;
+	return *this;
+}
+
+const ATtinyChip& ATtinyChip::operator&=(RegValue arg)
+{
+	Reg[arg.Reg] &= arg.Value;
+	return *this;
+}
+
+uint8_t ATtinyChip::GetValue(RegEnum reg)
+{
+	return Reg[reg];
+}

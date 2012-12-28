@@ -20,13 +20,50 @@ hardware buttons and LEDs.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _UTIL_DELAY_H
-#define _UTIL_DELAY_H
+#ifndef _AT_TINY_H
+#define _AT_TINY_H
 
-/* In hardware the delay comes from a fixed number of instructions.  An
- * interrupt doesn't cause an early termination.  It will cause the delay
- * to take that much more wlal clock time, which isn't emulated here.
+#include <QMutex>
+#include <QMutexLocker>
+#include "avr/io.h"
+#include "ATtinyChip.h"
+
+/* This class wraps the main ATtinyChip to provide thread safe operations
+ * so that ATtinyChip doesn't need to do any locking interally.
  */
-void _delay_ms(int ms);
+class ATtiny
+{
+public:
+	// It is using the operator syntax just to make it obvious what
+	// operation they represent.
+	const ATtiny& operator=(RegValue arg)
+	{
+		QMutexLocker locker(&Mutex);
+		Chip=arg;
+		return *this;
+	}
+	const ATtiny& operator|=(RegValue arg)
+	{
+		QMutexLocker locker(&Mutex);
+		Chip|=arg;
+		return *this;
+	}
+	const ATtiny& operator&=(RegValue arg)
+	{
+		QMutexLocker locker(&Mutex);
+		Chip&=arg;
+		return *this;
+	}
+	uint8_t GetValue(RegEnum reg)
+	{
+		QMutexLocker locker(&Mutex);
+		return Chip.GetValue(reg);
+	}
+private:
+	ATtinyChip Chip;
+	QMutex Mutex;
+};
 
-#endif // _UTIL_DELAY_H
+extern ATtiny g_ATtiny;
+
+#endif // _AT_TINY_H

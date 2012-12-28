@@ -20,13 +20,26 @@ hardware buttons and LEDs.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _UTIL_DELAY_H
-#define _UTIL_DELAY_H
+#ifndef _AT_TINY_CHIP_H
+#define _AT_TINY_CHIP_H
 
-/* In hardware the delay comes from a fixed number of instructions.  An
- * interrupt doesn't cause an early termination.  It will cause the delay
- * to take that much more wlal clock time, which isn't emulated here.
+#include <avr/io.h>
+
+/* This class keeps track of the ATtiny register states and requied
+ * emulations.  Use the ATtiny class as a wrapper when accessing the
+ * class from multiple threads.
  */
-void _delay_ms(int ms);
+class ATtinyChip
+{
+public:
+	// It is using the operator syntax just to make it obvious what
+	// operation they represent.
+	const ATtinyChip& operator=(RegValue arg);
+	const ATtinyChip& operator|=(RegValue arg);
+	const ATtinyChip& operator&=(RegValue arg);
+	uint8_t GetValue(RegEnum reg);
+private:
+	uint8_t Reg[REG_SREG];
+};
 
-#endif // _UTIL_DELAY_H
+#endif // _AT_TINY_CHIP_H

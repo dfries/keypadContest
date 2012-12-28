@@ -20,14 +20,54 @@ hardware buttons and LEDs.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <util/delay.h>
-#include <time.h>
+#include <iostream>
+#include <avr/io.h>
+#include "ATtiny.h"
 
 using namespace std;
 
-void _delay_ms(int ms)
+RegObj PIND(REG_PIND);
+RegObj DDRD(REG_DDRD);
+RegObj PORTD(REG_PORTD);
+
+RegObj PINB(REG_PINB);
+RegObj DDRB(REG_DDRB);
+RegObj PORTB(REG_PORTB);
+
+RegObj PINA(REG_PINA);
+RegObj DDRA(REG_DDRA);
+RegObj PORTA(REG_PORTA);
+
+RegObj CLKPR(REG_CLKPR);
+
+RegObj& RegObj::operator=(uint8_t value)
 {
-	struct timespec req={ms/1000};
-	req.tv_nsec=(req.tv_sec*1000 - ms)*1000000;
-	nanosleep(&req, NULL);
+	g_ATtiny=RegValue(Reg, value);
+	return *this;
+}
+
+RegObj& RegObj::operator|=(uint8_t value)
+{
+	g_ATtiny|=RegValue(Reg, value);
+	return *this;
+}
+
+RegObj& RegObj::operator&=(uint8_t value)
+{
+	g_ATtiny&=RegValue(Reg, value);
+	return *this;
+}
+
+RegObj::operator uint8_t()
+{
+	return g_ATtiny.GetValue(Reg);
+}
+
+// Unlike compiling for the ATtiny where it only needs this function if
+// the compile time value is out of range and the function is needed,
+// it won't link here when it is undefined.
+uint8_t hz_is_not_valid(uint32_t hz)
+{
+	cerr << __func__ << " invalid " << hz << " value\n";
+	return CLKPR;
 }

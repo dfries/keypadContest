@@ -13,7 +13,8 @@ LD_LIBS=$(QT_LIBS)
 
 AVR_OBJ=../keypadContest/src/cpu_clock/cpu_clock.o
 keypadalike: $(AVR_OBJ) \
-	avr_util.o \
+	avr_util.o avr_io.o \
+	ATtiny.o ATtinyChip.o \
 	main.o SoftIO.o moc_SoftIO.o
 	$(LINK.o) -o $@ $^
 

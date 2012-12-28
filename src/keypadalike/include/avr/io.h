@@ -20,9 +20,81 @@ hardware buttons and LEDs.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _AVR_IO_H
-#define _AVR_IO_H
+#ifndef _AVR_IO_H_
+#define _AVR_IO_H_
+
+#include <stdint.h>
+
+#include "iotn2313.h"
+
+// For source code compatibility rename main.  Don't include this from the
+// program's main.
+#ifndef AVR_MAIN
+#define main avr_main
+#define AVR_MAIN
+#endif
 
 #define _BV(bit) (1 << (bit))
 
-#endif // _AVR_IO_H
+// emulated registers
+enum RegEnum
+{
+	REG_PIND=0x10,
+	REG_DDRD=0x11,
+	REG_PORTD=0x12,
+
+	REG_PINB=0x16,
+	REG_DDRB=0x17,
+	REG_PORTB=0x18,
+
+	REG_PINA=0x19,
+	REG_DDRA=0x1A,
+	REG_PORTA=0x1B,
+
+	REG_CLKPR=0x26,
+
+	// status register (and also the last register)
+	REG_SREG=0x3f
+};
+
+// used to allow C++ operator operations to have both the register and value
+class RegValue
+{
+public:
+	RegValue(RegEnum reg, uint8_t value) : Reg(reg), Value(value) {}
+	RegEnum Reg;
+	uint8_t Value;
+};
+
+/* The register object that gives source code compatibility for reading and
+ * writing registers such as ports.
+ */
+class RegObj
+{
+public:
+	RegObj(RegEnum reg) : Reg(reg) {}
+	RegObj& operator=(uint8_t value);
+	RegObj& operator|=(uint8_t value);
+	RegObj& operator&=(uint8_t value);
+	// allow reading back as an integer
+	operator uint8_t();
+private:
+	RegEnum Reg;
+};
+
+// ATtiny
+extern RegObj PIND;
+extern RegObj DDRD;
+extern RegObj PORTD;
+
+extern RegObj PINB;
+extern RegObj DDRB;
+extern RegObj PORTB;
+
+extern RegObj PINA;
+extern RegObj DDRA;
+extern RegObj PORTA;
+
+extern RegObj CLKPR;
+
+#endif // _AVR_IO_H_
