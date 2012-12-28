@@ -25,9 +25,9 @@ hardware buttons and LEDs.
 
 using namespace std;
 
-void _delay_ms(int ms)
+void _delay_ms(double ms)
 {
-	struct timespec req={ms/1000};
-	req.tv_nsec=(req.tv_sec*1000 - ms)*1000000;
+	struct timespec req={(long int)(ms/1000)};
+	req.tv_nsec=(ms - req.tv_sec*1000)*1000000;
 	nanosleep(&req, NULL);
 }

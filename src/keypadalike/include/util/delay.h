@@ -24,9 +24,10 @@ hardware buttons and LEDs.
 #define _UTIL_DELAY_H
 
 /* In hardware the delay comes from a fixed number of instructions.  An
- * interrupt doesn't cause an early termination.  It will cause the delay
- * to take that much more wlal clock time, which isn't emulated here.
+ * interrupt doesn't cause an early return, it doesn't here either.  It will
+ * cause the delay to take that much more wall clock time, which isn't emulated
+ * here.
  */
-void _delay_ms(int ms);
+void _delay_ms(double ms);
 
 #endif // _UTIL_DELAY_H
