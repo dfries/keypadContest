@@ -20,25 +20,12 @@ hardware buttons and LEDs.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QApplication>
-#include <QThread>
-#include <stdlib.h>
 #include "MicroMain.h"
-#include "SoftIO.h"
 
-int main(int argc, char **argv)
+// The avr's main is renamed avr_main.
+int avr_main();
+
+int MicroMain::Run()
 {
-	QApplication app(argc, argv);
-	QThread main_thread;
-	MicroMain micro_main;
-	micro_main.moveToThread(&main_thread);
-	QObject::connect(&main_thread, SIGNAL(started()),
-		&micro_main, SLOT(Run()));
-	main_thread.start();
-	SoftIO io;
-	io.show();
-	int ret = app.exec();
-	// The microprocessor main is not expected to return, just exit instead.
-	exit(2);
-	return ret;
+	return avr_main();
 }

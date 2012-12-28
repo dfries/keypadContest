@@ -20,25 +20,21 @@ hardware buttons and LEDs.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QApplication>
-#include <QThread>
-#include <stdlib.h>
-#include "MicroMain.h"
-#include "SoftIO.h"
+#ifndef _MICRO_MAIN_H
+#define _MICRO_MAIN_H
 
-int main(int argc, char **argv)
+#include <QObject>
+
+/* This class runs the microprocessor "main" function.  Call the Run slot
+ * from its own thread.
+ */
+class MicroMain: public QObject
 {
-	QApplication app(argc, argv);
-	QThread main_thread;
-	MicroMain micro_main;
-	micro_main.moveToThread(&main_thread);
-	QObject::connect(&main_thread, SIGNAL(started()),
-		&micro_main, SLOT(Run()));
-	main_thread.start();
-	SoftIO io;
-	io.show();
-	int ret = app.exec();
-	// The microprocessor main is not expected to return, just exit instead.
-	exit(2);
-	return ret;
-}
+	Q_OBJECT
+public slots:
+	// Run from the QThread, will not return as long as the program is
+	// executing.
+	int Run();
+};
+
+#endif // _MICRO_MAIN_H
