@@ -47,7 +47,7 @@ SOFTWARE.
 
 /* Leave this undefined to catch non-constant (invalid) input values.
  */
-uint8_t hz_is_not_valid(void);
+uint8_t hz_is_not_valid(uint32_t hz);
 /* Takes the number of CPU cycles per second and returns the CPU prescaler
  * CLKPR value.  The hardware only supports 9 clock rates.
  * returns the prescale CLKPR value
@@ -70,7 +70,7 @@ inline uint8_t inline_cpu_hz_to_prescale(uint32_t hz)
 		hz==125000 ? CPU_125kHz :
 		hz==62500 ? CPU_62500Hz :
 		hz==31250 ? CPU_31250Hz :
-		hz_is_not_valid();
+		hz_is_not_valid(hz);
 }
 
 // Add -DF_CPU=8000000 (or a valid Hz) to the compile command line, and
