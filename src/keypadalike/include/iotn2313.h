@@ -82,16 +82,16 @@
 /* 0x00 Reserved */
 
 /* ATtiny Digital Input Disable Register DIDR */
-#define DIDR    _SFR_IO8(0x01)
+//#define DIDR    _SFR_IO8(0x01)
 
 #define AIN1D   1
 #define AIN0D   0
 
 /* ATtiny USART Baud Rate Register High UBBRH[11:8] */
-#define UBRRH   _SFR_IO8(0x02)
+//#define UBRRH   _SFR_IO8(0x02)
 
 /* ATtiny USART Control and Status Register C UCSRC */
-#define UCSRC   _SFR_IO8(0x03)
+//#define UCSRC   _SFR_IO8(0x03)
 
 #define UMSEL   6
 #define UPM1    5
@@ -104,7 +104,7 @@
 /* 0x04 -> 0x07 Reserved */
 
 /* ATtiny Analog Comparator Control and Status Register ACSR */
-#define ACSR    _SFR_IO8(0x08)
+//#define ACSR    _SFR_IO8(0x08)
 
 #define ACD     7
 #define ACBG    6
@@ -116,10 +116,10 @@
 #define ACIS0   0
 
 /* USART Baud Rate Register Low UBBRL[7:0] */
-#define UBRRL   _SFR_IO8(0x09)
+//#define UBRRL   _SFR_IO8(0x09)
 
 /* ATtiny USART Control Register UCSRB */
-#define UCSRB   _SFR_IO8(0x0A)
+//#define UCSRB   _SFR_IO8(0x0A)
 
 #define RXCIE   7
 #define TXCIE   6
@@ -131,7 +131,7 @@
 #define TXB8    0
 
 /* ATtiny USART Status Register UCSRA */
-#define UCSRA   _SFR_IO8(0x0B)
+//#define UCSRA   _SFR_IO8(0x0B)
 
 #define RXC     7
 #define TXC     6
@@ -143,12 +143,12 @@
 #define MPCM    0
 
 /* USART I/O Data Register UBR or RXB[7:0], TXB[7:0] */
-#define UDR     _SFR_IO8(0x0C)
-#define RXB     _SFR_IO8(0x0C)
-#define TXB     _SFR_IO8(0x0C)
+//#define UDR     _SFR_IO8(0x0C)
+//#define RXB     _SFR_IO8(0x0C)
+//#define TXB     _SFR_IO8(0x0C)
 
 /* ATtiny USI Control Register USICR */
-#define USICR   _SFR_IO8(0x0D)
+//#define USICR   _SFR_IO8(0x0D)
 
 #define USISIE  7
 #define USIOIE  6
@@ -160,7 +160,7 @@
 #define USITC   0
 
 /* ATtiny USI Status Register USISR */
-#define USISR   _SFR_IO8(0x0E)
+//#define USISR   _SFR_IO8(0x0E)
 
 #define USISIF  7
 #define USIOIF  6
@@ -172,10 +172,10 @@
 #define USICNT0 0
 
 /* ATtiny USI Data Register USIDR[7:0] */
-#define USIDR   _SFR_IO8(0x0F)
+//#define USIDR   _SFR_IO8(0x0F)
 
 /* Input Pins, Port D PIND[6:0] */
-#define PIND    _SFR_IO8(0x10)
+//#define PIND    _SFR_IO8(0x10)
 
 #define PIND6   6
 #define PIND5   5
@@ -186,7 +186,7 @@
 #define PIND0   0
 
 /* Data Direction Register, Port D DDRD[6:0] */
-#define DDRD    _SFR_IO8(0x11)
+//#define DDRD    _SFR_IO8(0x11)
 
 #define DDD6    6
 #define DDD5    5
@@ -197,7 +197,7 @@
 #define DDD0    0
 
 /* Data Register, Port D PORTD[6:0] */
-#define PORTD   _SFR_IO8(0x12)
+//#define PORTD   _SFR_IO8(0x12)
 
 #define PD6     6
 #define PD5     5
@@ -208,16 +208,16 @@
 #define PD0     0
 
 /* ATtiny General Purpose I/O Register Zero GPIOR0[7:0] */
-#define GPIOR0  _SFR_IO8(0x13)
+//#define GPIOR0  _SFR_IO8(0x13)
 
 /* ATtiny General Purpose I/O Register One GPIOR1[7:0] */
-#define GPIOR1  _SFR_IO8(0x14)
+//#define GPIOR1  _SFR_IO8(0x14)
 
 /* ATtiny General Purpose I/O Register Two One GPIOR2[7:0] */
-#define GPIOR2  _SFR_IO8(0x15)
+//#define GPIOR2  _SFR_IO8(0x15)
 
 /* Input Pins, Port B PORTB[7:0] */
-#define PINB    _SFR_IO8(0x16)
+//#define PINB    _SFR_IO8(0x16)
 
 #define PINB7   7
 #define PINB6   6
@@ -229,7 +229,7 @@
 #define PINB0   0
 
 /* Data Direction Register, Port B PORTB[7:0] */
-#define DDRB    _SFR_IO8(0x17)
+//#define DDRB    _SFR_IO8(0x17)
 
 #define DDB7    7
 #define DDB6    6
@@ -241,7 +241,7 @@
 #define DDB0    0
 
 /* Data Register, Port B PORTB[7:0] */
-#define PORTB   _SFR_IO8(0x18)
+//#define PORTB   _SFR_IO8(0x18)
 
 #define PB7     7
 #define PB6     6
@@ -253,28 +253,28 @@
 #define PB0     0
 
 /* Port A Input Pins Address PINA[2:0] */
-#define PINA    _SFR_IO8(0x19)
+//#define PINA    _SFR_IO8(0x19)
 
 #define PINA2   2
 #define PINA1   1
 #define PINA0   0
 
 /* Port A Data Direction Register DDRA[2:0] */
-#define DDRA    _SFR_IO8(0x1A)
+//#define DDRA    _SFR_IO8(0x1A)
 
 #define DDRA2   2
 #define DDRA1   1
 #define DDRA0   0
 
 /* Port A Data Register PORTA[2:0] */
-#define PORTA   _SFR_IO8(0x1B)
+//#define PORTA   _SFR_IO8(0x1B)
 
 #define PA2     2
 #define PA1     1
 #define PA0     0
 
 /* ATtiny EEPROM Control Register EECR */
-#define EECR	_SFR_IO8(0x1C)
+//#define EECR	_SFR_IO8(0x1C)
 #define EEPM1   5
 #define EEPM0   4
 #define EERIE   3
@@ -283,11 +283,11 @@
 #define EERE    0
 
 /* EEPROM Data Register */
-#define EEDR	_SFR_IO8(0x1D)
+//#define EEDR	_SFR_IO8(0x1D)
 
 /* The EEPROM Address Register EEAR[6:0] */
-#define EEAR	_SFR_IO8(0x1E)
-#define EEARL	_SFR_IO8(0x1E)
+//#define EEAR	_SFR_IO8(0x1E)
+//#define EEARL	_SFR_IO8(0x1E)
 #define EEAR6   6
 #define EEAR5   5
 #define EEAR4   4
@@ -299,7 +299,7 @@
 /* 0x1F Reserved */
 
 /* ATtiny Pin Change Mask Register PCMSK PCINT[7:0] */
-#define PCMSK   _SFR_IO8(0x20)
+//#define PCMSK   _SFR_IO8(0x20)
 
 #define PCINT7  7
 #define PCINT6  6
@@ -311,7 +311,7 @@
 #define PCINT0  0
 
 /* ATtiny Watchdog Timer Control Register WDTCSR */
-#define WDTCSR  _SFR_IO8(0x21)
+//#define WDTCSR  _SFR_IO8(0x21)
 
 #define WDIF    7
 #define WDIE    6
@@ -323,23 +323,23 @@
 #define WDP0    0
 
 /* ATtiny Timer/Counter1 Control Register C TCCR1C */
-#define TCCR1C  _SFR_IO8(0x22)
+//#define TCCR1C  _SFR_IO8(0x22)
 
 #define FOC1A   7
 #define FOC1B   6
 
 /* General Timer/Counter Control Register GTCCR */
-#define GTCCR   _SFR_IO8(0x23)
+//#define GTCCR   _SFR_IO8(0x23)
 
 #define PSR10   0
 
 /* T/C 1 Input Capture Register ICR1[15:0] */
-#define ICR1    _SFR_IO16(0x24)
-#define ICR1L   _SFR_IO8(0x24)
-#define ICR1H   _SFR_IO8(0x25)
+//#define ICR1    _SFR_IO16(0x24)
+//#define ICR1L   _SFR_IO8(0x24)
+//#define ICR1H   _SFR_IO8(0x25)
 
 /* ATtiny Clock Prescale Register */
-#define CLKPR   _SFR_IO8(0x26)
+//#define CLKPR   _SFR_IO8(0x26)
 
 #define CLKPCE  7
 #define CLKPS3  3
@@ -350,25 +350,25 @@
 /* 0x27 Reserved */
 
 /* ATtiny Output Compare Register 1 B OCR1B[15:0] */
-#define OCR1B   _SFR_IO16(0x28)
-#define OCR1BL  _SFR_IO8(0x28)
-#define OCR1BH  _SFR_IO8(0x29)
+//#define OCR1B   _SFR_IO16(0x28)
+//#define OCR1BL  _SFR_IO8(0x28)
+//#define OCR1BH  _SFR_IO8(0x29)
 
 /* Output Compare Register 1 OCR1A[15:0] */
-#define OCR1    _SFR_IO16(0x2A)
-#define OCR1L   _SFR_IO8(0x2A)
-#define OCR1H   _SFR_IO8(0x2B)
-#define OCR1A   _SFR_IO16(0x2A)
-#define OCR1AL  _SFR_IO8(0x2A)
-#define OCR1AH  _SFR_IO8(0x2B)
+//#define OCR1    _SFR_IO16(0x2A)
+//#define OCR1L   _SFR_IO8(0x2A)
+//#define OCR1H   _SFR_IO8(0x2B)
+//#define OCR1A   _SFR_IO16(0x2A)
+//#define OCR1AL  _SFR_IO8(0x2A)
+//#define OCR1AH  _SFR_IO8(0x2B)
 
 /* Timer/Counter 1 TCNT1[15:0] */
-#define TCNT1   _SFR_IO16(0x2C)
-#define TCNT1L  _SFR_IO8(0x2C)
-#define TCNT1H  _SFR_IO8(0x2D)
+//#define TCNT1   _SFR_IO16(0x2C)
+//#define TCNT1L  _SFR_IO8(0x2C)
+//#define TCNT1H  _SFR_IO8(0x2D)
 
 /* ATtiny Timer/Counter 1 Control and Status Register TCCR1B */
-#define TCCR1B  _SFR_IO8(0x2E)
+//#define TCCR1B  _SFR_IO8(0x2E)
 
 #define ICNC1   7
 #define ICES1   6
@@ -379,7 +379,7 @@
 #define CS10    0
 
 /* ATtiny Timer/Counter 1 Control Register TCCR1A */
-#define TCCR1A  _SFR_IO8(0x2F)
+//#define TCCR1A  _SFR_IO8(0x2F)
 
 #define COM1A1  7
 #define COM1A0  6
@@ -389,7 +389,7 @@
 #define WGM10   0 /* Was PWM10 in AT90S2313 */
 
 /* ATtiny Timer/Counter Control Register A TCCR0A */
-#define TCCR0A  _SFR_IO8(0x30)
+//#define TCCR0A  _SFR_IO8(0x30)
 
 #define COM0A1  7
 #define COM0A0  6
@@ -399,7 +399,7 @@
 #define WGM00   0
 
 /* ATtiny Oscillator Calibration Register OSCCAL[6:0] */
-#define OSCCAL  _SFR_IO8(0x31)
+//#define OSCCAL  _SFR_IO8(0x31)
 
 #define CAL6    6
 #define CAL5    5
@@ -410,10 +410,10 @@
 #define CAL0    0
 
 /* Timer/Counter 0 TCNT0[7:0] */
-#define TCNT0   _SFR_IO8(0x32)
+//#define TCNT0   _SFR_IO8(0x32)
 
 /* ATtiny Timer/Counter 0 Control Register TCCR0B */
-#define TCCR0B  _SFR_IO8(0x33)
+//#define TCCR0B  _SFR_IO8(0x33)
 
 #define FOC0A   7
 #define FOC0B   6
@@ -423,7 +423,7 @@
 #define CS00    0
 
 /* ATtiny MCU Status Register MCUSR */
-#define MCUSR   _SFR_IO8(0x34)
+//#define MCUSR   _SFR_IO8(0x34)
 
 #define WDRF    3
 #define BORF    2
@@ -431,7 +431,7 @@
 #define PORF    0
 
 /* ATtiny MCU general Control Register MCUCR */
-#define MCUCR   _SFR_IO8(0x35)
+//#define MCUCR   _SFR_IO8(0x35)
 
 #define PUD     7
 #define SM1     6
@@ -444,10 +444,10 @@
 #define ISC00   0
 
 /* ATtiny Output Compare Register A OCR0A[7:0] */
-#define OCR0A   _SFR_IO8(0x36)
+//#define OCR0A   _SFR_IO8(0x36)
 
 /* ATtiny Store Program Memory Control and Status Register SPMCSR */
-#define SPMCSR  _SFR_IO8(0x37)
+//#define SPMCSR  _SFR_IO8(0x37)
 
 #define CTPB    4
 #define RFLB    3
@@ -458,7 +458,7 @@
 #define SELFPRGE  0 /* The name is left for compatibility. */
 
 /* ATtiny Timer/Counter Interrupt Flag register TIFR */
-#define TIFR    _SFR_IO8(0x38)
+//#define TIFR    _SFR_IO8(0x38)
 
 #define TOV1    7
 #define OCF1A   6
@@ -469,7 +469,7 @@
 #define OCF0A   0
 
 /* ATtiny Timer/Counter Interrupt MaSK register TIMSK */
-#define TIMSK   _SFR_IO8(0x39)
+//#define TIMSK   _SFR_IO8(0x39)
 
 #define TOIE1   7
 #define OCIE1A  6
@@ -480,21 +480,21 @@
 #define OCIE0A  0
 
 /* ATtiny External Interrupt Flag Register EIFR, was GIFR */
-#define EIFR    _SFR_IO8(0x3A)
+//#define EIFR    _SFR_IO8(0x3A)
 
 #define INTF1   7
 #define INTF0   6
 #define PCIF    5
 
 /* ATtiny General Interrupt MaSK register GIMSK */
-#define GIMSK   _SFR_IO8(0x3B)
+//#define GIMSK   _SFR_IO8(0x3B)
 
 #define INT1    7
 #define INT0    6
 #define PCIE    5
 
 /* ATtiny Output Compare Register B OCR0B[7:0] */
-#define OCR0B   _SFR_IO8(0x3C)
+//#define OCR0B   _SFR_IO8(0x3C)
 
 /* Interrupt vectors: */
 
