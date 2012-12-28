@@ -185,4 +185,5 @@ int main(void)
 		if(leds >= 1<<10)
 			leds=1;
 	}
+	return 1;
 }
