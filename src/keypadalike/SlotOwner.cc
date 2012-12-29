@@ -20,33 +20,10 @@ hardware buttons and LEDs.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ATtinyChip.h"
-#include "HallKeypad.h"
+#include "SlotOwner.h"
 
-ATtinyChip::ATtinyChip()
+SlotOwner::SlotOwner(QObject *obj, QObject *parent) :
+	QObject(parent),
+	Obj(obj)
 {
-	memset(Reg, 0, sizeof(Reg));
-}
-
-const ATtinyChip& ATtinyChip::operator=(RegValue arg)
-{
-	Reg[arg.Reg] = arg.Value;
-	return *this;
-}
-
-const ATtinyChip& ATtinyChip::operator|=(RegValue arg)
-{
-	Reg[arg.Reg] |= arg.Value;
-	return *this;
-}
-
-const ATtinyChip& ATtinyChip::operator&=(RegValue arg)
-{
-	Reg[arg.Reg] &= arg.Value;
-	return *this;
-}
-
-uint8_t ATtinyChip::GetValue(RegEnum reg)
-{
-	return Reg[reg];
 }

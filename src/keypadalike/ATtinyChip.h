@@ -25,6 +25,8 @@ hardware buttons and LEDs.
 
 #include <avr/io.h>
 
+class HallKeypad;
+
 /* This class keeps track of the ATtiny register states and requied
  * emulations.  Use the ATtiny class as a wrapper when accessing the
  * class from multiple threads.
@@ -32,6 +34,8 @@ hardware buttons and LEDs.
 class ATtinyChip
 {
 public:
+	ATtinyChip();
+	void SetPeripheral(HallKeypad *keypad) { Keypad = keypad; }
 	// It is using the operator syntax just to make it obvious what
 	// operation they represent.
 	const ATtinyChip& operator=(RegValue arg);
@@ -40,6 +44,7 @@ public:
 	uint8_t GetValue(RegEnum reg);
 private:
 	uint8_t Reg[REG_SREG];
+	HallKeypad *Keypad;
 };
 
 #endif // _AT_TINY_CHIP_H

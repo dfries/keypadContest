@@ -28,12 +28,19 @@ hardware buttons and LEDs.
 #include "avr/io.h"
 #include "ATtinyChip.h"
 
+class HallKeypad;
+
 /* This class wraps the main ATtinyChip to provide thread safe operations
  * so that ATtinyChip doesn't need to do any locking interally.
  */
 class ATtiny
 {
 public:
+	void SetPeripheral(HallKeypad *keypad)
+	{
+		QMutexLocker locker(&Mutex);
+		Chip.SetPeripheral(keypad);
+	}
 	// It is using the operator syntax just to make it obvious what
 	// operation they represent.
 	const ATtiny& operator=(RegValue arg)

@@ -25,18 +25,42 @@ hardware buttons and LEDs.
 #include <stdlib.h>
 #include "MicroMain.h"
 #include "SoftIO.h"
+#include "HallKeypad.h"
+#include "ATtiny.h"
 
+// include/avr/io.h uses a macro to rename main to avr_main
+#ifdef AVR_MAIN
+#undef main
+#endif
+
+/* overview
+ * SoftIO, the GUI showing the LED status and buttons for input
+ * ATtiny (interface through ATtinyChip), register and microcontroller status
+ * HallKeypad, accessed through ATtinyChip to read from write to SoftIO LED
+ * and button status in place of the Hall Research KP2B keypad,
+ * the object is given to ATtiny to call into (as the real microcontroller
+ * would interface with)
+ * MicroMain runs the main microcontroller routine, interfaces with ATtiny
+ */
 int main(int argc, char **argv)
 {
 	QApplication app(argc, argv);
+	SoftIO io;
+	HallKeypad keypad;
+	QObject::connect(&io, SIGNAL(SetButtons(uint16_t)),
+		&keypad, SLOT(SetButtons(uint16_t)));
+	QObject::connect(&keypad, SIGNAL(SetLEDs(uint16_t)),
+		&io, SLOT(SetLEDs(uint16_t)));
+	io.show();
+
 	QThread main_thread;
 	MicroMain micro_main;
 	micro_main.moveToThread(&main_thread);
 	QObject::connect(&main_thread, SIGNAL(started()),
 		&micro_main, SLOT(Run()));
 	main_thread.start();
-	SoftIO io;
-	io.show();
+
+	g_ATtiny.SetPeripheral(&keypad);
 	int ret = app.exec();
 	// The microprocessor main is not expected to return, just exit instead.
 	exit(2);

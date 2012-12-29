@@ -24,6 +24,7 @@ hardware buttons and LEDs.
 
 #include <QWidget>
 class QPushButton;
+class QRadioButton;
 
 /* Instead of the hardware buttons and LEDs, do software push buttons and
  * colored circles in software.
@@ -35,8 +36,20 @@ class SoftIO : public QWidget
 public:
 	SoftIO();
 
+public slots:
+	// like the hardware bit 0 to 9 is, 0 top left to top right,
+	// then bottom left to bottom right
+	void SetLEDs(uint16_t led);
+signals:
+	void SetButtons(uint16_t button);
+private slots:
+	void Clicked(bool checked, QObject *sender);
+
 private:
+	QRadioButton *LEDs[BUTTON_COUNT];
 	QPushButton *Buttons[BUTTON_COUNT];
+	uint16_t LEDState;
+	uint16_t ButtonState;
 };
 
 #endif //_SOFT_IO_H

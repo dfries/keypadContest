@@ -24,21 +24,68 @@ hardware buttons and LEDs.
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QRadioButton>
+#include "SlotOwner.h"
 
-SoftIO::SoftIO()
+SoftIO::SoftIO() :
+	LEDState(0)
 {
 	QVBoxLayout *vlayout=new QVBoxLayout;
-	QHBoxLayout *hlayout=new QHBoxLayout;
+	QHBoxLayout *hled=new QHBoxLayout, *hbutton=new QHBoxLayout;
 	for(int i=0; i<BUTTON_COUNT; ++i)
 	{
 		if(i==BUTTON_COUNT/2)
 		{
-			vlayout->addLayout(hlayout);
-			hlayout=new QHBoxLayout;
+			vlayout->addLayout(hled);
+			vlayout->addLayout(hbutton);
+			hled=new QHBoxLayout;
+			hbutton=new QHBoxLayout;
 		}
+		LEDs[i]=new QRadioButton;
+		hled->addWidget(LEDs[i]);
+		// Bounce the signal through a unique object to be able to
+		// identify which object sent it when it gets to the local slot.
+		SlotOwner *owner=new SlotOwner(LEDs[i], this);
+		connect(LEDs[i], SIGNAL(clicked(bool)),
+			owner, SLOT(SlotA(bool)));
+		connect(owner, SIGNAL(SignalA(bool, QObject*)),
+			SLOT(Clicked(bool, QObject*)));
 		Buttons[i]=new QPushButton(QString("%1").arg(i));
-		hlayout->addWidget(Buttons[i]);
+		hbutton->addWidget(Buttons[i]);
 	}
-	vlayout->addLayout(hlayout);
+	vlayout->addLayout(hled);
+	vlayout->addLayout(hbutton);
 	setLayout(vlayout);
+}
+
+void SoftIO::SetLEDs(uint16_t led)
+{
+	if(led == LEDState)
+		return;
+
+	for(int i=0; i<BUTTON_COUNT; ++i)
+	{
+		int b=1<<i;
+		// update if required
+		if((led ^ LEDState) & b)
+			LEDs[i]->setDown(led & b);
+	}
+	LEDState=led;
+}
+
+void SoftIO::Clicked(bool checked, QObject *sender)
+{
+	QAbstractButton *button=dynamic_cast<QAbstractButton*>(button);
+	if(!button)
+		return;
+	for(int i=0; i<BUTTON_COUNT; ++i)
+	{
+		if(button==Buttons[i])
+		{
+			ButtonState &= ~(1<<i);
+			ButtonState |= checked<<i;
+			SetButtons(ButtonState);
+			break;
+		}
+	}
 }

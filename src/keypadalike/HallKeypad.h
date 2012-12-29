@@ -20,33 +20,27 @@ hardware buttons and LEDs.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ATtinyChip.h"
-#include "HallKeypad.h"
+#ifndef _HALL_KEYPAD_H
+#define _HALL_KEYPAD_H
 
-ATtinyChip::ATtinyChip()
-{
-	memset(Reg, 0, sizeof(Reg));
-}
+#include <QObject>
+#include <QMutex>
 
-const ATtinyChip& ATtinyChip::operator=(RegValue arg)
+/* Emulates the Hall Research KP2B keypad connections to the microcontroller
+ * registers.
+ */
+class HallKeypad : public QObject
 {
-	Reg[arg.Reg] = arg.Value;
-	return *this;
-}
+	Q_OBJECT
+public slots:
+	// like the hardware bit 0 to 9 is, 0 top left to top right,
+	// then bottom left to bottom right
+	void SetButtons(uint16_t buttons);
+signals:
+	void SetLEDs(uint16_t led);
+private:
+	QMutex Mutex;
+	uint16_t Buttons, LEDs;
+};
 
-const ATtinyChip& ATtinyChip::operator|=(RegValue arg)
-{
-	Reg[arg.Reg] |= arg.Value;
-	return *this;
-}
-
-const ATtinyChip& ATtinyChip::operator&=(RegValue arg)
-{
-	Reg[arg.Reg] &= arg.Value;
-	return *this;
-}
-
-uint8_t ATtinyChip::GetValue(RegEnum reg)
-{
-	return Reg[reg];
-}
+#endif // _HALL_KEYPAD_H

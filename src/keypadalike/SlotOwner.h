@@ -20,33 +20,31 @@ hardware buttons and LEDs.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ATtinyChip.h"
-#include "HallKeypad.h"
+#ifndef _SLOT_OWNER_H
+#define _SLOT_OWNER_H
 
-ATtinyChip::ATtinyChip()
-{
-	memset(Reg, 0, sizeof(Reg));
-}
+#include <QObject>
 
-const ATtinyChip& ATtinyChip::operator=(RegValue arg)
+/* Receives a signal and adds the an object pointer to it when calling its
+ * signal.
+ */
+class SlotOwner : public QObject
 {
-	Reg[arg.Reg] = arg.Value;
-	return *this;
-}
+	Q_OBJECT
+public:
+	SlotOwner(QObject *obj, QObject *parent=NULL);
+public slots:
+	void SlotA() { SignalA(Obj); }
+	void SlotB() { SignalA(Obj); }
+	void SlotA(bool value) { SignalA(value, Obj); }
+	void SlotB(bool value) { SignalA(value, Obj); }
+signals:
+	void SignalA(QObject *obj);
+	void SignalB(QObject *obj);
+	void SignalA(bool value, QObject *obj);
+	void SignalB(bool value, QObject *obj);
+private:
+	QObject *Obj;
+};
 
-const ATtinyChip& ATtinyChip::operator|=(RegValue arg)
-{
-	Reg[arg.Reg] |= arg.Value;
-	return *this;
-}
-
-const ATtinyChip& ATtinyChip::operator&=(RegValue arg)
-{
-	Reg[arg.Reg] &= arg.Value;
-	return *this;
-}
-
-uint8_t ATtinyChip::GetValue(RegEnum reg)
-{
-	return Reg[reg];
-}
+#endif // _SLOT_OWNER_H

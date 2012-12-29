@@ -20,33 +20,11 @@ hardware buttons and LEDs.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ATtinyChip.h"
 #include "HallKeypad.h"
+#include <QMutexLocker>
 
-ATtinyChip::ATtinyChip()
+void HallKeypad::SetButtons(uint16_t buttons)
 {
-	memset(Reg, 0, sizeof(Reg));
-}
-
-const ATtinyChip& ATtinyChip::operator=(RegValue arg)
-{
-	Reg[arg.Reg] = arg.Value;
-	return *this;
-}
-
-const ATtinyChip& ATtinyChip::operator|=(RegValue arg)
-{
-	Reg[arg.Reg] |= arg.Value;
-	return *this;
-}
-
-const ATtinyChip& ATtinyChip::operator&=(RegValue arg)
-{
-	Reg[arg.Reg] &= arg.Value;
-	return *this;
-}
-
-uint8_t ATtinyChip::GetValue(RegEnum reg)
-{
-	return Reg[reg];
+	QMutexLocker locker(&Mutex);
+	Buttons=buttons;
 }
