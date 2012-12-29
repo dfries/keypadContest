@@ -24,6 +24,7 @@ hardware buttons and LEDs.
 #define _AT_TINY_CHIP_H
 
 #include <avr/io.h>
+#include <functional>
 
 class HallKeypad;
 
@@ -43,6 +44,10 @@ public:
 	const ATtinyChip& operator&=(RegValue arg);
 	uint8_t GetValue(RegEnum reg);
 private:
+	// Allow all the various assignment operations to be a lambda callback
+	// to have a common before and after callback.
+	typedef std::function<void (uint8_t &v)> RegOperation;
+	const ATtinyChip& Set(RegEnum reg, RegOperation op);
 	uint8_t Reg[REG_SREG];
 	HallKeypad *Keypad;
 };

@@ -30,19 +30,37 @@ ATtinyChip::ATtinyChip()
 
 const ATtinyChip& ATtinyChip::operator=(RegValue arg)
 {
-	Reg[arg.Reg] = arg.Value;
-	return *this;
+	return Set(arg.Reg, [arg](uint8_t &v) { v=arg.Value; });
 }
 
 const ATtinyChip& ATtinyChip::operator|=(RegValue arg)
 {
-	Reg[arg.Reg] |= arg.Value;
-	return *this;
+	return Set(arg.Reg, [arg](uint8_t &v) { v|=arg.Value; });
 }
 
 const ATtinyChip& ATtinyChip::operator&=(RegValue arg)
 {
-	Reg[arg.Reg] &= arg.Value;
+	return Set(arg.Reg, [arg](uint8_t &v) { v&=arg.Value; });
+}
+
+const ATtinyChip& ATtinyChip::Set(RegEnum reg, RegOperation op)
+{
+	uint8_t v=Reg[reg];
+	uint8_t copy=v;
+	op(v);
+	if(v==copy)
+		return *this;
+	Reg[reg]=v;
+	switch(reg)
+	{
+	case REG_PORTD:
+	case REG_PORTB:
+	case REG_PORTA:
+		Keypad->SetPort(reg, v);
+		break;
+	default:
+		break;
+	}
 	return *this;
 }
 
