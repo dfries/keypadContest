@@ -22,6 +22,7 @@ hardware buttons and LEDs.
 
 #include <QApplication>
 #include <QThread>
+#include <QMetaType>
 #include <stdlib.h>
 #include "MicroMain.h"
 #include "SoftIO.h"
@@ -44,6 +45,9 @@ hardware buttons and LEDs.
  */
 int main(int argc, char **argv)
 {
+	// Register the types to be used in indirect signals
+	qRegisterMetaType<uint16_t>("uint16_t");
+
 	QApplication app(argc, argv);
 	SoftIO io;
 	HallKeypad keypad;
