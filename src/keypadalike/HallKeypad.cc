@@ -21,7 +21,76 @@ hardware buttons and LEDs.
 */
 
 #include "HallKeypad.h"
+#include <iostream>
 #include <QMutexLocker>
+
+using namespace std;
+
+HallKeypad::HallKeypad() :
+	Buttons(0),
+	LEDs(0),
+	PortD(0),
+	PortB(0)
+{
+}
+
+void HallKeypad::SetPort(RegEnum reg, uint8_t value)
+{
+	QMutexLocker locker(&Mutex);
+	if(reg == REG_PORTD)
+	{
+		PortD=value;
+		UpdateLEDs();
+		// inputs are read from GetPort so skip any buttons enable bits
+		return;
+	}
+	if(reg == REG_PORTB)
+	{
+		PortB=value;
+		UpdateLEDs();
+	}
+	//if(reg == REG_PORTA) TODO
+}
+
+void HallKeypad::UpdateLEDs()
+{
+	uint16_t output=LEDs;
+	if(PortD & _BV(PD2))
+		output = (output &0xff00) | PortB;
+	if(PortD & _BV(PD3))
+		output = (output &0x00ff) | (PortB<<8);
+	if(LEDs != output)
+	{
+		LEDs=output;
+		SetLEDs(~LEDs);
+	}
+}
+
+uint8_t HallKeypad::GetPort(RegEnum reg)
+{
+	QMutexLocker locker(&Mutex);
+	if(reg == REG_PORTD)
+		return PortD;
+	if(reg != REG_PORTB)
+		return 0xff & rand();
+	uint8_t value;
+	// active low
+	uint8_t invD=~PortD;
+	if(invD & (_BV(PD4) | _BV(PD5)))
+	{
+		if(invD & _BV(PD4))
+			value=Buttons;
+		if(invD & _BV(PD5))
+			value|=Buttons>>8;
+	}
+	else
+	{
+		cerr << "HallKeypad::GetPort read PORTB without input "
+			"enabled\n";
+		value=0xff & rand();
+	}
+	return value;
+}
 
 void HallKeypad::SetButtons(uint16_t buttons)
 {
