@@ -54,6 +54,20 @@ const ATtinyChip& ATtinyChip::Set(RegEnum reg, RegOperation op)
 	switch(reg)
 	{
 	case REG_PORTD:
+		v&=Reg[REG_DDRD];
+		break;
+	case REG_PORTB:
+		v&=Reg[REG_DDRB];
+		break;
+	case REG_PORTA:
+		v&=Reg[REG_DDRA];
+		break;
+	default:
+		break;
+	}
+	switch(reg)
+	{
+	case REG_PORTD:
 	case REG_PORTB:
 	case REG_PORTA:
 		Keypad->SetPort(reg, v);

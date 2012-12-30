@@ -36,8 +36,8 @@ class HallKeypad : public QObject
 public:
 	HallKeypad();
 	// Only call with registers connected to output ports when the
-	// direction is out.  (Input pullup resistors aren't delt with right
-	// now).
+	// direction is out.  Input pullup resistors aren't delt with right
+	// now, so if the direction is input the bit will always be 0.
 	void SetPort(RegEnum reg, uint8_t value);
 	// Call to read from a port that is in input direction.
 	uint8_t GetPort(RegEnum reg);
