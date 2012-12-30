@@ -19,37 +19,36 @@ hardware buttons and LEDs.
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef _SOFT_IO_H
-#define _SOFT_IO_H
+
+#ifndef __LED_WIDGET_H
+#define __LED_WIDGET_H
 
 #include <QWidget>
-class QPushButton;
-class LEDWidget;
+#include <QTimer>
+#include <QTime>
 
-/* Instead of the hardware buttons and LEDs, do software push buttons and
- * colored circles in software.
- */
-class SoftIO : public QWidget
+class LEDWidget : public QWidget
 {
 	Q_OBJECT
-	enum {BUTTON_COUNT=10};
 public:
-	SoftIO();
-
-public slots:
-	// like the hardware bit 0 to 9 is, 0 top left to top right,
-	// then bottom left to bottom right
-	void SetLEDs(uint16_t led);
-signals:
-	void SetButtons(uint16_t button);
+	LEDWidget(QWidget *parent=NULL);
+	// There are three output color, high, low, or in between if it
+	// is frequently being turned on and off.
+	void SetOn(bool on);
+	bool GetOn() const { return On; }
 private slots:
-	void Clicked(bool checked, QObject *sender);
-
+	void Timedout();
+protected:
+	void paintEvent(QPaintEvent *event);
 private:
-	LEDWidget *LEDs[BUTTON_COUNT];
-	QPushButton *Buttons[BUTTON_COUNT];
-	uint16_t LEDState;
-	uint16_t ButtonState;
+	// last requested state
+	bool On;
+	// displayed intensity, based on how often On changes
+	unsigned char Intensity;
+	// number of times requested to be on and off
+	int ReqOn, ReqOff;
+	QTimer Timer;
+	QTime Time;
 };
 
-#endif //_SOFT_IO_H
+#endif // __LED_WIDGET_H
