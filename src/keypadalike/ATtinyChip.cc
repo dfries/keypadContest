@@ -80,5 +80,9 @@ const ATtinyChip& ATtinyChip::Set(RegEnum reg, RegOperation op)
 
 uint8_t ATtinyChip::GetValue(RegEnum reg)
 {
+	if(reg==REG_PINB)
+	{
+		return Keypad->GetPort(reg);
+	}
 	return Reg[reg];
 }

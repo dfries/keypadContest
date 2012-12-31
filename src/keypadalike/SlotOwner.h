@@ -35,14 +35,11 @@ public:
 	SlotOwner(QObject *obj, QObject *parent=NULL);
 public slots:
 	void SlotA() { SignalA(Obj); }
-	void SlotB() { SignalA(Obj); }
 	void SlotA(bool value) { SignalA(value, Obj); }
-	void SlotB(bool value) { SignalA(value, Obj); }
+	void SlotA(int value) { SignalA(value, Obj); }
 signals:
 	void SignalA(QObject *obj);
-	void SignalB(QObject *obj);
-	void SignalA(bool value, QObject *obj);
-	void SignalB(bool value, QObject *obj);
+	void SignalA(int value, QObject *obj);
 private:
 	QObject *Obj;
 };

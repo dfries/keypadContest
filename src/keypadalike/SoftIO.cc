@@ -21,7 +21,7 @@ hardware buttons and LEDs.
 */
 
 #include "SoftIO.h"
-#include <QPushButton>
+#include <QCheckBox>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include "LEDWidget.h"
@@ -43,15 +43,15 @@ SoftIO::SoftIO() :
 		}
 		LEDs[i]=new LEDWidget;
 		hled->addWidget(LEDs[i]);
-		Buttons[i]=new QPushButton(QString("%1").arg(i));
+		Buttons[i]=new QCheckBox(QString("%1").arg(i));
 		hbutton->addWidget(Buttons[i]);
 		// Bounce the signal through a unique object to be able to
 		// identify which object sent it when it gets to the local slot.
 		SlotOwner *owner=new SlotOwner(Buttons[i], this);
-		connect(Buttons[i], SIGNAL(clicked(bool)),
-			owner, SLOT(SlotA(bool)));
-		connect(owner, SIGNAL(SignalA(bool, QObject*)),
-			SLOT(Clicked(bool, QObject*)));
+		connect(Buttons[i], SIGNAL(stateChanged(int)),
+			owner, SLOT(SlotA(int)));
+		connect(owner, SIGNAL(SignalA(int, QObject*)),
+			SLOT(Clicked(int, QObject*)));
 	}
 	vlayout->addLayout(hled);
 	vlayout->addLayout(hbutton);
@@ -73,9 +73,9 @@ void SoftIO::SetLEDs(uint16_t led)
 	LEDState=led;
 }
 
-void SoftIO::Clicked(bool checked, QObject *sender)
+void SoftIO::Clicked(int state, QObject *sender)
 {
-	QAbstractButton *button=dynamic_cast<QAbstractButton*>(button);
+	QAbstractButton *button=dynamic_cast<QAbstractButton*>(sender);
 	if(!button)
 		return;
 	for(int i=0; i<BUTTON_COUNT; ++i)
@@ -83,7 +83,7 @@ void SoftIO::Clicked(bool checked, QObject *sender)
 		if(button==Buttons[i])
 		{
 			ButtonState &= ~(1<<i);
-			ButtonState |= checked<<i;
+			ButtonState |= (state?1:0)<<i;
 			SetButtons(ButtonState);
 			break;
 		}

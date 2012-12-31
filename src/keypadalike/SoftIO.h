@@ -23,7 +23,7 @@ hardware buttons and LEDs.
 #define _SOFT_IO_H
 
 #include <QWidget>
-class QPushButton;
+class QCheckBox;
 class LEDWidget;
 
 /* Instead of the hardware buttons and LEDs, do software push buttons and
@@ -43,11 +43,11 @@ public slots:
 signals:
 	void SetButtons(uint16_t button);
 private slots:
-	void Clicked(bool checked, QObject *sender);
+	void Clicked(int state, QObject *sender);
 
 private:
 	LEDWidget *LEDs[BUTTON_COUNT];
-	QPushButton *Buttons[BUTTON_COUNT];
+	QCheckBox *Buttons[BUTTON_COUNT];
 	uint16_t LEDState;
 	uint16_t ButtonState;
 };

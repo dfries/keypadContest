@@ -69,12 +69,12 @@ void HallKeypad::UpdateLEDs()
 uint8_t HallKeypad::GetPort(RegEnum reg)
 {
 	QMutexLocker locker(&Mutex);
-	if(reg == REG_PORTD)
+	if(reg == REG_PIND)
 		return PortD;
-	if(reg != REG_PORTB)
+	if(reg != REG_PINB)
 		return 0xff & rand();
 	uint8_t value;
-	// active low
+	// button input "Output Enable" line is active low
 	uint8_t invD=~PortD;
 	if(invD & (_BV(PD4) | _BV(PD5)))
 	{
@@ -95,5 +95,6 @@ uint8_t HallKeypad::GetPort(RegEnum reg)
 void HallKeypad::SetButtons(uint16_t buttons)
 {
 	QMutexLocker locker(&Mutex);
-	Buttons=buttons;
+	// 0 for pressed, 1 for not pressed, invert
+	Buttons=~buttons;
 }
