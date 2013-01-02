@@ -204,6 +204,55 @@ if( i >= NUM_SWITCHES )
 		}
 	}
 	
+	// gameplay
+	uint8_t step;
+	for( step = 0; step < NUM_SWITCHES; step++ )
+	{
+		while( 1 )
+		{
+			// Simple debounce: read the switches, pause, and read them again.
+			// Only count the buttons that were pressed at both samplings as 
+			// being pressed.
+			switches = readSwitches();
+			_delay_ms( 10 );
+			switches &= readSwitches();
+			
+			if( switches )
+			{
+				uint8_t pressedSwitch = 0;
+				i = 0;
+				while( switches != 0 )
+				{
+					if( switches & 0x1 )
+					{
+						pressedSwitch = i;
+						break;
+					}
+					switches = switches >> 1;
+					i++;
+				}
+				
+				if( pressedSwitch == solution[step] )
+				{
+					// player pressed the correct button
+					writeLEDs( VALID_SWITCHES_MASK >> (NUM_SWITCHES-(step+1)) );
+					break;
+				}
+				else
+				{
+					// player pressed the wrong button
+					
+					
+					//writeLEDs( VALID_SWITCHES_MASK >> (NUM_SWITCHES-step) );
+					
+				}
+			}
+			
+			
+			
+		}
+	}
+	
 }
 
 
