@@ -20,6 +20,7 @@ Copyright 2012 Andrew Sampson.  Released under the GPL v2.  See COPYING.
 */
 
 
+#include <stdlib.h>
 #include <stdint.h>
 #include <avr/io.h>
 #include <util/delay.h>
@@ -30,6 +31,7 @@ Copyright 2012 Andrew Sampson.  Released under the GPL v2.  See COPYING.
 #define SW_B_READ_OUTPUTENABLE PD5
 
 #define VALID_SWITCHES_MASK 0b1111111111
+#define NUM_SWITCHES 10
 
 /*
 Uses port B to talk to the LED latches.
@@ -78,8 +80,8 @@ uint16_t readSwitches( void )
 	PORTD &= ~(1 << SW_A_READ_OUTPUTENABLE);
 	// I've found that a delay is necessary in order for the switch values 
 	// to appear on the bus.
-	asm("nop");
-	asm("nop");
+	asm("nop\n\t"
+		"nop\n\t");
 	// grab the values from port B
 	result |= PINB;
 	// disable bus output for the switches
@@ -89,8 +91,8 @@ uint16_t readSwitches( void )
 	PORTD &= ~(1 << SW_B_READ_OUTPUTENABLE);
 	// I've found that a delay is necessary in order for the switch values 
 	// to appear on the bus.
-	asm("nop");
-	asm("nop");
+	asm("nop\n\t"
+		"nop\n\t");
 	// grab the values from port B
 	result |= (PINB << 8);
 	// disable bus output for the switches
@@ -102,8 +104,105 @@ uint16_t readSwitches( void )
 }
 
 
+#define RAND8 ((uint8_t)(rand() & 0xff))
+#define RAND4 ((uint8_t)(rand() & 0x0f))
+#define SOLUTION_SENTINEL 0xff
+
+void generateSinglePlayerSolution( uint8_t solution[] )
+{
+	uint8_t i = 0;
+	uint8_t scratch[NUM_SWITCHES];
+	
+	// initialize the arrays
+	for( i = 0; i < NUM_SWITCHES; i++ )
+	{
+		solution[i] = SOLUTION_SENTINEL;
+		scratch[i] = i;
+	}
+	
+	// populate solution[] by selecting random entries from scratch[], copying 
+	// them to solution[], and marking them in scratch[] as used
+	for( i = 0; i < NUM_SWITCHES; i++ )
+	{
+		uint8_t selectedIndex = 0;
+		// there is the remote chance that this loop could run forever
+		do
+		{
+			selectedIndex = RAND4;
+			if( selectedIndex >= NUM_SWITCHES )
+				selectedIndex -= NUM_SWITCHES;
+		} while( scratch[selectedIndex] == SOLUTION_SENTINEL );
+		
+		solution[i] = scratch[selectedIndex];
+		scratch[selectedIndex] = SOLUTION_SENTINEL;
+	}
+	
+}
+
 void recollectionNormal( uint8_t difficulty )
 {
+	uint8_t i = 0;
+	uint8_t solution[NUM_SWITCHES];
+
+	// generate the solution
+	generateSinglePlayerSolution( solution );
+	
+	// allow the user to preview the solution
+/*
+i = 0;
+while( 1 )
+{
+_delay_ms( 500 );
+writeLEDs( 1 << (solution[i]) );
+
+i++;
+if( i >= NUM_SWITCHES )
+	i = 0;
+}
+*/
+	uint16_t shownLights = 0;
+	uint16_t switches;
+	while( shownLights != VALID_SWITCHES_MASK )
+	{
+		// Simple debounce: read the switches, pause, and read them again.
+		// Only count the buttons that were pressed at both samplings as 
+		// being pressed.
+		switches = readSwitches();
+		_delay_ms( 10 );
+		switches &= readSwitches();
+		
+		if( switches )
+		{
+			/*
+			fixme - enforce the following:
+			- the player is penalized for stalling
+			- display each light only once?
+			- force player to select switches in sequential order?
+			- [if a semi-momentary policy is implemented: ]
+				- the light is on for a minimum time
+				- the light is on for a maximum time
+			*/
+			
+			uint8_t pressedSwitch = 0;
+			i = 0;
+			while( switches != 0 )
+			{
+				if( switches & 0x1 )
+				{
+					pressedSwitch = i;
+					break;
+				}
+				switches = switches >> 1;
+				i++;
+			}
+
+			writeLEDs( 1 << (solution[pressedSwitch]) );
+			shownLights |= 1 << pressedSwitch;
+			
+			_delay_ms( 1000 );
+			writeLEDs( 0 );
+		}
+	}
 	
 }
 
@@ -199,10 +298,12 @@ int main(void)
 		
 		_delay_ms( 1000 );
 
+		writeLEDs( 0 );
+
 		// run the game mode that was selected
 		switch( gameMode )
 		{
-		case 1:
+		case 0:
 			recollectionNormal( difficulty );
 			break;
 		default:
