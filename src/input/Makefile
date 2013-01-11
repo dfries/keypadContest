@@ -1,14 +1,14 @@
 MCU=attiny2313
 AVRDUDEMCU=attiny2313
-CC=avr-gcc
-CFLAGS=-g -Os -Wall -mcall-prologues -mmcu=$(MCU) -std=gnu99
+CXX=avr-g++
+CXXFLAGS=-g -Os -Wall -mcall-prologues -mmcu=$(MCU) -std=c++11
 ELF2HEX=avr-objcopy
 OBJDUMP=avr-objdump
 AVRDUDE=avrdude
 TARGET=input
 SIZE=avr-size
 
-CFLAGS:=$(CFLAGS) -DF_CPU=8000000
+CXXFLAGS:=$(CXXFLAGS) -DF_CPU=8000000
 
 # always build
 .PHONY: all program
@@ -19,7 +19,7 @@ program : $(TARGET).hex
 	$(AVRDUDE) -p $(AVRDUDEMCU) -c usbtiny -U flash:w:$(TARGET).hex
 
 %.elf : %.o
-	$(CC) $(CFLAGS) $< -o $@
+	$(CXX) $(CXXFLAGS) $< -o $@
 
 %.hex : %.elf
 	$(ELF2HEX) -R .eeprom -O ihex $< $@
