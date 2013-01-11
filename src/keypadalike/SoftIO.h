@@ -44,6 +44,9 @@ signals:
 	void SetButtons(uint16_t button);
 private slots:
 	void Clicked(int state, QObject *sender);
+protected:
+	void keyPressEvent(QKeyEvent *event);
+	void keyReleaseEvent(QKeyEvent *event);
 
 private:
 	LEDWidget *LEDs[BUTTON_COUNT];

@@ -24,8 +24,13 @@ hardware buttons and LEDs.
 #include <QCheckBox>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QKeyEvent>
 #include "LEDWidget.h"
 #include "SlotOwner.h"
+#define XK_MISCELLANY
+#include <X11/keysymdef.h>
+
+#include <stdio.h>
 
 SoftIO::SoftIO() :
 	LEDState(0)
@@ -88,4 +93,142 @@ void SoftIO::Clicked(int state, QObject *sender)
 			break;
 		}
 	}
+}
+
+void SoftIO::keyPressEvent(QKeyEvent *event)
+{
+	if(event->isAutoRepeat())
+		return;
+	uint16_t state=ButtonState;
+	/* a through g is top row starting on the left
+	 * left alt is top right
+	 * right alt is bottom left
+	 * h through ; is the bottom row starting on the left
+	 * Same with the keyboard rows above and below those, this is so
+	 * your left hand can be one row higher as a reminder that it is
+	 * the upper row of buttons.
+	 */
+	//switch(event->key())
+	// nativeVirtualKey is required to get left and right alt keys
+	switch(event->nativeVirtualKey())
+	{
+	case 'q':
+	case 'a':
+	case 'z':
+		ButtonState |= 1;
+		break;
+	case 'w':
+	case 's':
+	case 'x':
+		ButtonState |= 2;
+		break;
+	case 'e':
+	case 'd':
+	case 'c':
+		ButtonState |= 4;
+		break;
+	case 'r':
+	case 'f':
+	case 'v':
+		ButtonState |= 8;
+		break;
+	case 't':
+	case 'g':
+	case 'b':
+	case XK_Alt_L:
+		ButtonState |= 0x10;
+		break;
+	case 'y':
+	case 'h':
+	case 'n':
+	case XK_Alt_R:
+		ButtonState |= 0x20;
+		break;
+	case 'u':
+	case 'j':
+	case 'm':
+		ButtonState |= 0x40;
+		break;
+	case 'i':
+	case 'k':
+	case ',':
+		ButtonState |= 0x80;
+		break;
+	case 'o':
+	case 'l':
+	case '.':
+		ButtonState |= 0x100;
+		break;
+	case 'p':
+	case ';':
+	case '/':
+		ButtonState |= 0x200;
+		break;
+	}
+	if(state!=ButtonState)
+		SetButtons(ButtonState);
+}
+
+void SoftIO::keyReleaseEvent(QKeyEvent *event)
+{
+	if(event->isAutoRepeat())
+		return;
+	uint16_t state=ButtonState;
+	switch(event->nativeVirtualKey())
+	{
+	case 'q':
+	case 'a':
+	case 'z':
+		ButtonState &= ~1;
+		break;
+	case 'w':
+	case 's':
+	case 'x':
+		ButtonState &= ~2;
+		break;
+	case 'e':
+	case 'd':
+	case 'c':
+		ButtonState &= ~4;
+		break;
+	case 'r':
+	case 'f':
+	case 'v':
+		ButtonState &= ~8;
+		break;
+	case 't':
+	case 'g':
+	case 'b':
+	case XK_Alt_L:
+		ButtonState &= ~0x10;
+		break;
+	case 'y':
+	case 'h':
+	case 'n':
+	case XK_Alt_R:
+		ButtonState &= ~0x20;
+		break;
+	case 'u':
+	case 'j':
+	case 'm':
+		ButtonState &= ~0x40;
+		break;
+	case 'i':
+	case 'k':
+	case ',':
+		ButtonState &= ~0x80;
+		break;
+	case 'o':
+	case 'l':
+	case '.':
+		ButtonState &= ~0x100;
+		break;
+	case 'p':
+	case ';':
+	case '/':
+		ButtonState &= ~0x200;
+		break;
+	}
+	if(state!=ButtonState)
+		SetButtons(ButtonState);
 }
