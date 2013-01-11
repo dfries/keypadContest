@@ -124,9 +124,9 @@ int main(void)
 	while( 1 ) {}
 	*/
 
-	// Verify CPU speed and delay times, should take 16 seconds to
+	// Verify CPU speed and delay times, should take 4 seconds to
 	// execute.
-	for(uint8_t i=0; i<8; ++i)
+	for(uint8_t i=0; i<2; ++i)
 	{
 		writeLEDs(0b1111100000 | CLKPR);
 		_delay_ms( 1000 );
@@ -134,6 +134,7 @@ int main(void)
 		_delay_ms( 1000 );
 	}
 
+	#if 0
 	for(uint16_t binary=0; binary<1024; ++binary)
 	{
 			uint8_t low = binary >> 8;
@@ -159,7 +160,7 @@ int main(void)
 		int delay=128>>prescale;
 		CPU_PRESCALE(prescale);
 		writeLEDs(0b1111100000 | prescale);
-		for(i=0; i<delay; ++i)
+		//for(i=0; i<delay; ++i)
 			_delay_ms(100);
 		// led chaser sequence
 		for( i = 0 ; i < 8; i++ )
@@ -176,7 +177,9 @@ int main(void)
 			}
 		}
 	}
+	#endif
 
+#if 0
 	// blink all leds 2 times
 	writeLEDs( 0x0000 );
 	_delay_ms( 100 );
@@ -198,7 +201,8 @@ int main(void)
 	writeLEDs( 0xffff );
 	_delay_ms( 41 );
 	writeLEDs( 0x0000 );
-	
+#endif
+
 	uint16_t switches = 0;
 	// read switches and update leds (momentary style), 
 	// until user presses buttons 1 and 5
