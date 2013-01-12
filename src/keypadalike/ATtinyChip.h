@@ -42,6 +42,7 @@ public:
 	const ATtinyChip& operator=(RegValue arg);
 	const ATtinyChip& operator|=(RegValue arg);
 	const ATtinyChip& operator&=(RegValue arg);
+	const ATtinyChip& operator^=(RegValue arg);
 	uint8_t GetValue(RegEnum reg);
 private:
 	// Allow all the various assignment operations to be a lambda callback

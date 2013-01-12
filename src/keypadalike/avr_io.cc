@@ -58,6 +58,12 @@ RegObj& RegObj::operator&=(uint8_t value)
 	return *this;
 }
 
+RegObj& RegObj::operator^=(uint8_t value)
+{
+	g_ATtiny^=RegValue(Reg, value);
+	return *this;
+}
+
 RegObj::operator uint8_t()
 {
 	return g_ATtiny.GetValue(Reg);

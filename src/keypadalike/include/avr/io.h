@@ -76,6 +76,7 @@ public:
 	RegObj& operator=(uint8_t value);
 	RegObj& operator|=(uint8_t value);
 	RegObj& operator&=(uint8_t value);
+	RegObj& operator^=(uint8_t value);
 	// allow reading back as an integer
 	operator uint8_t();
 private:
