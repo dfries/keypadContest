@@ -48,4 +48,4 @@ sizeafter: $(TARGET).elf
 	$(OBJDUMP) -h -S -z $< > $@
 
 clean :
-	rm -f *.hex *.elf *.elf.old *.lss *.o
+	rm -f *.hex *.elf *.elf.old *.lss *.o *.d
