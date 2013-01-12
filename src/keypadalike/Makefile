@@ -6,8 +6,9 @@
 # Copyright 2012 David Fries.
 # Released under the GPL v2.  See COPYING.
 
-QT_FLAGS:=$(shell pkg-config --cflags QtGui)
-QT_LIBS:=$(shell pkg-config --libs QtGui)
+QT_FLAGS:=$(shell pkg-config --cflags QtGui) \
+-I/usr/include/QtMobility -I/usr/include/QtMultimediaKit
+QT_LIBS:=$(shell pkg-config --libs QtGui) -lQtMultimediaKit
 CXXFLAGS=-g -Wall -std=c++11 -MMD -MP $(QT_FLAGS) -Iinclude -DF_CPU=8000000
 LD_LIBS=$(QT_LIBS)
 
@@ -18,7 +19,8 @@ keypadalike: $(AVR_OBJ) \
 	ATtiny.o ATtinyChip.o MicroMain.o moc_MicroMain.o \
 	main.o SoftIO.o moc_SoftIO.o \
 	SlotOwner.o moc_SlotOwner.o HallKeypad.o moc_HallKeypad.o \
-	LEDWidget.o moc_LEDWidget.o
+	LEDWidget.o moc_LEDWidget.o \
+	SquareAudio.o
 	$(LINK.o) -o $@ $^
 
 .PHONY: clean

@@ -41,6 +41,8 @@ void HallKeypad::SetPort(RegEnum reg, uint8_t value)
 	{
 		PortD=value;
 		UpdateLEDs();
+
+		Audio.SetPins(value & _BV(PD1), value & _BV(PD6));
 		// inputs are read from GetPort so skip any buttons enable bits
 		return;
 	}

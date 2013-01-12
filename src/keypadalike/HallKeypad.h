@@ -26,6 +26,7 @@ hardware buttons and LEDs.
 #include <QObject>
 #include <QMutex>
 #include <avr/io.h>
+#include "SquareAudio.h"
 
 /* Emulates the Hall Research KP2B keypad connections to the microcontroller
  * registers.
@@ -63,6 +64,8 @@ private:
 	uint8_t PortD;
 	// data bus bits
 	uint8_t PortB;
+
+	SquareAudio Audio;
 };
 
 #endif // _HALL_KEYPAD_H
