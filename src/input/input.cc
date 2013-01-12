@@ -18,6 +18,9 @@ Copyright 2012 Andrew Sampson.  Released under the GPL v2.  See COPYING.
 #define LED_B_WRITE_LATCH PD3
 #define SW_A_READ_OUTPUTENABLE PD4
 #define SW_B_READ_OUTPUTENABLE PD5
+#define SPKR_PIN_1 PD1
+#define SPKR_PIN_2 PD6
+#define SPKR_MASK ((1<<SPKR_PIN_1)|(1<<SPKR_PIN_2))
 
 #define VALID_SWITCHES_MASK 0b1111111111
 
@@ -106,8 +109,9 @@ int main(void)
 		(1 << LED_A_WRITE_LATCH) | 
 		(1 << LED_B_WRITE_LATCH) | 
 		(1 << SW_A_READ_OUTPUTENABLE) | 
-		(1 << SW_B_READ_OUTPUTENABLE);
-	PORTD = 0;
+		(1 << SW_B_READ_OUTPUTENABLE) | SPKR_MASK;
+	// one speaker pin high the other is already low
+	PORTD = _BV(SPKR_PIN_1);
 	// the latch OutputEnable is active low
 	PORTD |= (1 << SW_A_READ_OUTPUTENABLE);
 	PORTD |= (1 << SW_B_READ_OUTPUTENABLE);
@@ -126,12 +130,29 @@ int main(void)
 
 	// Verify CPU speed and delay times, should take 4 seconds to
 	// execute.
+	#if 0
 	for(uint8_t i=0; i<2; ++i)
 	{
 		writeLEDs(0b1111100000 | CLKPR);
 		_delay_ms( 1000 );
 		writeLEDs(CLKPR);
 		_delay_ms( 1000 );
+	}
+	#endif
+
+
+	for(;;)
+	{
+		for(uint16_t i=1; i<16000; ++i)
+		{
+			PORTD ^= SPKR_MASK;
+			//writeLEDs(i);
+			/*
+			for(uint16_t j=0; j<i; ++j)
+				_delay_us(1);
+				*/
+			_delay_us(i);
+		}
 	}
 
 	#if 0
