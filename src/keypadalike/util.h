@@ -20,15 +20,12 @@ hardware buttons and LEDs.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _UTIL_DELAY_H
-#define _UTIL_DELAY_H
+#ifndef _UTIL_H
+#define _UTIL_H
 
-/* In hardware the delay comes from a fixed number of instructions.  An
- * interrupt doesn't cause an early return, it doesn't here either.  It will
- * cause the delay to take that much more wall clock time, which isn't emulated
- * here.
- */
-void _delay_ms(double ms);
-void _delay_us(double ms);
+inline double operator-(const struct timeval &lhs, const struct timeval &rhs)
+{
+	return lhs.tv_sec - rhs.tv_sec + (lhs.tv_usec - rhs.tv_usec)*1e-6;
+}
 
-#endif // _UTIL_DELAY_H
+#endif // _UTIL_H

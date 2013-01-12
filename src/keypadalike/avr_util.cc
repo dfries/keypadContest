@@ -21,13 +21,45 @@ hardware buttons and LEDs.
 */
 
 #include <util/delay.h>
+#include <sys/time.h>
+#include <sched.h>
 #include <time.h>
+#include <stdio.h>
+#include "util.h"
 
 using namespace std;
 
 void _delay_ms(double ms)
 {
+	//printf("%s %10.6f seconds\n", __func__, ms/1000);
+	#if 0
+	// busy loop sub 1ms sleep times (doesn't seem to be required)
+	if(ms < 1)
+	{
+		struct timeval start, now;
+		gettimeofday(&start, NULL);
+		double sec=ms/1000;
+		for(;;)
+		{
+			gettimeofday(&now, NULL);
+			double delta=now-start;
+			if(delta>sec)
+				break;
+			// be nice for part of the remaining time
+			#if 1
+			if(delta<sec*.8)
+				sched_yield();
+			#endif
+		}
+		return;
+	}
+	#endif
 	struct timespec req={(long int)(ms/1000)};
 	req.tv_nsec=(ms - req.tv_sec*1000)*1000000;
 	nanosleep(&req, NULL);
+}
+
+void _delay_us(double us)
+{
+	_delay_ms(us/1000);
 }
