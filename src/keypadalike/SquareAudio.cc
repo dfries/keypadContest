@@ -26,6 +26,8 @@ hardware buttons and LEDs.
 #include <QtMultimediaKit/QAudioFormat>
 #include <iostream>
 #include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include "util.h"
 
 using namespace std;
@@ -81,6 +83,16 @@ void SquareAudio::SetPins(bool pin0, bool pin1)
 
 		FirstTry=false;
 
+		// The calling thread should have been set to run on only
+		// one thread, but audio creates a new thread inheriting
+		// the current affinity.  Allow the audio thread to run on any
+		// cpu.
+		cpu_set_t mask, main;
+		sched_getaffinity(0, sizeof(mask), &mask);
+		// copy from the main thread
+		sched_getaffinity(getpid(), sizeof(main), &main);
+		sched_setaffinity(0, sizeof(main), &main);
+
 		QAudioFormat format;
 		format.setFrequency(freq);
 		format.setChannels(1);
@@ -99,6 +111,9 @@ void SquareAudio::SetPins(bool pin0, bool pin1)
 		Audio=new QAudioOutput(format);
 		Audio->setBufferSize(sample_bytes*(int)(buffer*freq));
 		IODevice=Audio->start();
+
+		sched_setaffinity(0, sizeof(mask), &mask);
+
 		if(!IODevice)
 			return;
 	}

@@ -21,11 +21,13 @@ hardware buttons and LEDs.
 */
 
 #include "MicroMain.h"
+#include "ATtiny.h"
 
 // The avr's main is renamed avr_main.
 int avr_main();
 
 int MicroMain::Run()
 {
+	ATtiny::SetThreadAffinity();
 	return avr_main();
 }

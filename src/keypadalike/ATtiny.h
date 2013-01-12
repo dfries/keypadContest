@@ -41,6 +41,19 @@ public:
 		QMutexLocker locker(&Mutex);
 		Chip.SetPeripheral(keypad);
 	}
+
+	/* The microprocessor has the main thread execution and interrupts.
+	 * There is only one CPU and so they are never executing concurrently,
+	 * but the interrupts can happen any time interrupts are enabled,
+	 * leading to the same kinds of concurrency problems.  To prevent
+	 * the main function and interrputs from runing at the same time,
+	 * call this function from each thread so they will only run on
+	 * one CPU and never at the same time.  This will allow them to
+	 * task share, but if that's a problem the microcontroller code
+	 * probably has problems anyway.
+	 */
+	static void SetThreadAffinity();
+
 	// It is using the operator syntax just to make it obvious what
 	// operation they represent.
 	const ATtiny& operator=(RegValue arg)

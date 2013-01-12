@@ -21,5 +21,18 @@ hardware buttons and LEDs.
 */
 
 #include "ATtiny.h"
+#include <sched.h>
+#include <string.h>
 
 ATtiny g_ATtiny;
+
+void ATtiny::SetThreadAffinity()
+{
+	// Schedule this thread only on the first CPU, any will work, but
+	// the first will always be there to select.
+	cpu_set_t mask;
+	memset(&mask, 0, sizeof(mask));
+	CPU_SET(0, &mask);
+	// 0 is the caller's thread id
+	sched_setaffinity(0, sizeof(mask), &mask);
+}
