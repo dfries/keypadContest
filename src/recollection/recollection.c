@@ -142,24 +142,13 @@ void generateSinglePlayerSolution( uint8_t solution[] )
 void recollectionNormal( uint8_t difficulty )
 {
 	uint8_t i = 0;
+	uint8_t score = 0;
 	uint8_t solution[NUM_SWITCHES];
 
 	// generate the solution
 	generateSinglePlayerSolution( solution );
 	
 	// allow the user to preview the solution
-/*
-i = 0;
-while( 1 )
-{
-_delay_ms( 500 );
-writeLEDs( 1 << (solution[i]) );
-
-i++;
-if( i >= NUM_SWITCHES )
-	i = 0;
-}
-*/
 	uint16_t shownLights = 0;
 	uint16_t switches;
 	while( shownLights != VALID_SWITCHES_MASK )
@@ -208,7 +197,8 @@ if( i >= NUM_SWITCHES )
 	uint8_t step;
 	for( step = 0; step < NUM_SWITCHES; step++ )
 	{
-		while( 1 )
+		uint8_t guessIsCorrect = 0;
+		while( !guessIsCorrect )
 		{
 			// Simple debounce: read the switches, pause, and read them again.
 			// Only count the buttons that were pressed at both samplings as 
@@ -236,22 +226,44 @@ if( i >= NUM_SWITCHES )
 				{
 					// player pressed the correct button
 					writeLEDs( VALID_SWITCHES_MASK >> (NUM_SWITCHES-(step+1)) );
-					break;
+					guessIsCorrect = 1;
 				}
 				else
 				{
-					// player pressed the wrong button
+					// player pressed the wrong button; flash the light above 
+					// the switch they just pressed
+					uint16_t currentLEDs = VALID_SWITCHES_MASK >> (NUM_SWITCHES-step);
+					uint16_t currentLEDsWithWrongGuess = currentLEDs ^ (1<<pressedSwitch);
 					
-					
-					//writeLEDs( VALID_SWITCHES_MASK >> (NUM_SWITCHES-step) );
-					
+					writeLEDs( currentLEDsWithWrongGuess );
+					_delay_ms( 250 );
+					writeLEDs( currentLEDs );
+					_delay_ms( 250 );
+					writeLEDs( currentLEDsWithWrongGuess );
+					_delay_ms( 250 );
+					writeLEDs( currentLEDs );
+					_delay_ms( 250 );
+					writeLEDs( currentLEDsWithWrongGuess );
+					_delay_ms( 250 );
+					writeLEDs( currentLEDs );
 				}
+					
+				// user pressed some button, so increment score
+				score++;
+				
+				// wait until user lets go of all switches
+				do
+				{
+					switches = readSwitches();
+				} while( switches );
 			}
-			
-			
 			
 		}
 	}
+	
+	// show score
+	writeLEDs( score );
+	_delay_ms( 7000 );
 	
 }
 
