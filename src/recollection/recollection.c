@@ -204,7 +204,7 @@ void recollectionNormal( uint8_t difficulty )
 	for( step = 0; step < NUM_SWITCHES && score <= maxGuesses; step++ )
 	{
 		uint8_t guessIsCorrect = 0;
-		while( !guessIsCorrect )
+		while( !guessIsCorrect && score <= maxGuesses )
 		{
 			// Simple debounce: read the switches, pause, and read them again.
 			// Only count the buttons that were pressed at both samplings as 
