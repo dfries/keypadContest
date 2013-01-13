@@ -203,6 +203,9 @@ void recollectionNormal( uint8_t difficulty )
 	uint8_t step;
 	for( step = 0; step < NUM_SWITCHES && score <= maxGuesses; step++ )
 	{
+		uint16_t currentLEDs = VALID_SWITCHES_MASK >> (NUM_SWITCHES-step);
+		writeLEDs( currentLEDs );
+		
 		uint8_t guessIsCorrect = 0;
 		while( !guessIsCorrect && score <= maxGuesses )
 		{
@@ -231,27 +234,21 @@ void recollectionNormal( uint8_t difficulty )
 				if( pressedSwitch == solution[step] )
 				{
 					// player pressed the correct button
-					writeLEDs( VALID_SWITCHES_MASK >> (NUM_SWITCHES-(step+1)) );
 					guessIsCorrect = 1;
 				}
 				else
 				{
 					// player pressed the wrong button; flash the light above 
 					// the switch they just pressed
-					uint16_t currentLEDs = VALID_SWITCHES_MASK >> (NUM_SWITCHES-step);
 					uint16_t currentLEDsWithWrongGuess = currentLEDs ^ (1<<pressedSwitch);
 					
-					writeLEDs( currentLEDsWithWrongGuess );
-					_delay_ms( 250 );
-					writeLEDs( currentLEDs );
-					_delay_ms( 250 );
-					writeLEDs( currentLEDsWithWrongGuess );
-					_delay_ms( 250 );
-					writeLEDs( currentLEDs );
-					_delay_ms( 250 );
-					writeLEDs( currentLEDsWithWrongGuess );
-					_delay_ms( 250 );
-					writeLEDs( currentLEDs );
+					for( i = 0; i < 3; i++ )
+					{
+						writeLEDs( currentLEDsWithWrongGuess );
+						_delay_ms( 250 );
+						writeLEDs( currentLEDs );
+						_delay_ms( 250 );
+					}
 				}
 					
 				// user pressed some button, so increment score
