@@ -53,8 +53,18 @@ enum RegEnum
 
 	REG_CLKPR=0x26,
 
+	// Timer 0
+	REG_TCCR0A=0x30,
+	REG_TCCR0B=0x33,
+	REG_TCNT0=0x32,
+	REG_OCR0A=0x36,
+	REG_OCR0B=0x3C,
+	REG_TIMSK=0x39,
+	REG_TIFR=0x38,
+
 	// status register (and also the last register)
 	REG_SREG=0x3f
+
 };
 
 // used to allow C++ operator operations to have both the register and value
@@ -97,5 +107,14 @@ extern RegObj DDRA;
 extern RegObj PORTA;
 
 extern RegObj CLKPR;
+
+// Timer 0
+extern RegObj TCCR0A;
+extern RegObj TCCR0B;
+extern RegObj TCNT0;
+extern RegObj OCR0A;
+extern RegObj OCR0B;
+extern RegObj TIMSK;
+extern RegObj TIFR;
 
 #endif // _AVR_IO_H_

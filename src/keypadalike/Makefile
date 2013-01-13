@@ -10,7 +10,7 @@ QT_FLAGS:=$(shell pkg-config --cflags QtGui) \
 -I/usr/include/QtMobility -I/usr/include/QtMultimediaKit
 QT_LIBS:=$(shell pkg-config --libs QtGui) -lQtMultimediaKit
 CXXFLAGS=-g -Wall -std=c++11 -MMD -MP $(QT_FLAGS) -Iinclude -DF_CPU=8000000
-LD_LIBS=$(QT_LIBS)
+LD_LIBS=$(QT_LIBS) -ldl
 
 #AVR_OBJ=../keypadContest/src/cpu_clock/cpu_clock.o
 AVR_OBJ=../keypadContest/src/input/input.o
@@ -20,7 +20,8 @@ keypadalike: $(AVR_OBJ) \
 	main.o SoftIO.o moc_SoftIO.o \
 	SlotOwner.o moc_SlotOwner.o HallKeypad.o moc_HallKeypad.o \
 	LEDWidget.o moc_LEDWidget.o \
-	SquareAudio.o
+	SquareAudio.o \
+	Timer.o moc_Timer.o Timer0.o Timer1.o
 	$(LINK.o) -o $@ $^
 
 .PHONY: clean

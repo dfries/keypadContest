@@ -40,6 +40,15 @@ RegObj PORTA(REG_PORTA);
 
 RegObj CLKPR(REG_CLKPR);
 
+// Timer 0
+RegObj TCCR0A(REG_TCCR0A);
+RegObj TCCR0B(REG_TCCR0B);
+RegObj TCNT0(REG_TCNT0);
+RegObj OCR0A(REG_OCR0A);
+RegObj OCR0B(REG_OCR0B);
+RegObj TIMSK(REG_TIMSK);
+RegObj TIFR(REG_TIFR);
+
 RegObj& RegObj::operator=(uint8_t value)
 {
 	g_ATtiny=RegValue(Reg, value);

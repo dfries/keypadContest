@@ -27,6 +27,7 @@ hardware buttons and LEDs.
 #include <functional>
 
 class HallKeypad;
+class Timer0;
 
 /* This class keeps track of the ATtiny register states and requied
  * emulations.  Use the ATtiny class as a wrapper when accessing the
@@ -48,9 +49,13 @@ private:
 	// Allow all the various assignment operations to be a lambda callback
 	// to have a common before and after callback.
 	typedef std::function<void (uint8_t &v)> RegOperation;
+
 	const ATtinyChip& Set(RegEnum reg, RegOperation op);
+
 	uint8_t Reg[REG_SREG];
 	HallKeypad *Keypad;
+	Timer0 *TimerObj0;
+	uint32_t SystemClockHz;
 };
 
 #endif // _AT_TINY_CHIP_H

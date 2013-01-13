@@ -22,8 +22,12 @@ hardware buttons and LEDs.
 
 #include "ATtinyChip.h"
 #include "HallKeypad.h"
+#include "Timer0.h"
 
-ATtinyChip::ATtinyChip()
+ATtinyChip::ATtinyChip() :
+	Keypad(NULL),
+	TimerObj0(NULL),
+	SystemClockHz(1000000) // ATtiny2313 default, selectable by fuses
 {
 	memset(Reg, 0, sizeof(Reg));
 }
@@ -56,6 +60,8 @@ const ATtinyChip& ATtinyChip::Set(RegEnum reg, RegOperation op)
 	if(v==copy)
 		return *this;
 	Reg[reg]=v;
+
+	// For output ports only keep the bits with an output direction.
 	switch(reg)
 	{
 	case REG_PORTD:
@@ -70,14 +76,46 @@ const ATtinyChip& ATtinyChip::Set(RegEnum reg, RegOperation op)
 	default:
 		break;
 	}
+
+	// update peripherals
 	switch(reg)
 	{
+	case REG_CLKPR:
+		// clock change lock-out not implemented, assume the program
+		// is doing it correctly
+		if(v == CLKPCE)
+			break;
+		if(v > 8)
+			printf("ATtinyChip::Set invalid CLKPR value %u\n", v);
+			break;
+		SystemClockHz=8000000 / (1<<v);
+		if(TimerObj0)
+			TimerObj0->SetSysteClock(SystemClockHz);
+		break;
 	case REG_PORTD:
 	case REG_PORTB:
 	case REG_PORTA:
-		Keypad->SetPort(reg, v);
+		if(Keypad)
+			Keypad->SetPort(reg, v);
 		break;
+	case REG_TCCR0A:
+	case REG_TCCR0B:
+	case REG_TCNT0:
+	case REG_OCR0A:
+	case REG_OCR0B:
+	case REG_TIMSK:
+	case REG_TIFR:
+		// Only allocate on the first non-zero write.
+		if(!TimerObj0 && v)
+		{
+			TimerObj0=new Timer0(Reg);
+			TimerObj0->SetSysteClock(SystemClockHz);
+			TimerObj0->start();
+		}
+		if(TimerObj0)
+			TimerObj0->Set(reg, v);
 	default:
+		printf("unhandled register 0x%2x\n", reg);
 		break;
 	}
 	return *this;
@@ -85,9 +123,19 @@ const ATtinyChip& ATtinyChip::Set(RegEnum reg, RegOperation op)
 
 uint8_t ATtinyChip::GetValue(RegEnum reg)
 {
-	if(reg==REG_PINB)
+	switch(reg)
 	{
+	case REG_PINB:
+		if(Keypad)
 		return Keypad->GetPort(reg);
+	// Only the counter and interrupt flag registers are modified
+	// from the timer counter, the rest can use the last written value.
+	case REG_TCNT0:
+	case REG_TIFR:
+		if(TimerObj0)
+			return TimerObj0->Get(reg);
+	default:
+		break;
 	}
 	return Reg[reg];
 }
