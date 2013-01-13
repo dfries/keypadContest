@@ -144,6 +144,12 @@ void recollectionNormal( uint8_t difficulty )
 	uint8_t i = 0;
 	uint8_t score = 0;
 	uint8_t solution[NUM_SWITCHES];
+	
+	uint8_t maxGuesses = 0xff;
+	if( difficulty == 1 )
+		maxGuesses = 30;
+	else if( difficulty == 2 )
+		maxGuesses = 12;
 
 	// generate the solution
 	generateSinglePlayerSolution( solution );
@@ -195,7 +201,7 @@ void recollectionNormal( uint8_t difficulty )
 	
 	// gameplay
 	uint8_t step;
-	for( step = 0; step < NUM_SWITCHES; step++ )
+	for( step = 0; step < NUM_SWITCHES && score <= maxGuesses; step++ )
 	{
 		uint8_t guessIsCorrect = 0;
 		while( !guessIsCorrect )
@@ -260,11 +266,48 @@ void recollectionNormal( uint8_t difficulty )
 			
 		}
 	}
+
+	// game over
+	if( score > maxGuesses )
+	{
+		// shameful defeat!
+		for( i = 0; i <= 5; i++ )
+		{
+			writeLEDs( 
+				(VALID_SWITCHES_MASK >> (NUM_SWITCHES-i)) | 
+				(0b11111 << (NUM_SWITCHES-i)) );
+			_delay_ms( 200 );
+		}
+		for( i = 0; i < 3; i++ )
+		{
+			writeLEDs( 0x0 );
+			_delay_ms( 200 );
+			writeLEDs( VALID_SWITCHES_MASK );
+			_delay_ms( 200 );
+		}
+	}
+	else
+	{
+		// glorious victory!
+		for( i = 0; i < 3; i++ )
+		{
+			writeLEDs( 0xaaa );
+			_delay_ms( 200 );
+			writeLEDs( ~0xaaa );
+			_delay_ms( 200 );
+		}
+	}
+	writeLEDs( 0 );
+	_delay_ms( 200 );
 	
 	// show score
 	writeLEDs( score );
-	_delay_ms( 7000 );
+	switches = 0;
+	while( !switches )
+		switches = readSwitches();
 	
+	writeLEDs( 0 );
+	_delay_ms( 500 );
 }
 
 
