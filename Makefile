@@ -4,10 +4,12 @@ CC=avr-gcc
 CFLAGS=-g -Os -Wall -mcall-prologues -mmcu=$(MCU)
 OBJ2HEX=avr-objcopy
 AVRDUDE=avrdude
-TARGET=keypad-input
+TARGET=rocket-launch
 
 program : $(TARGET).hex
 	$(AVRDUDE) -p $(AVRDUDEMCU) -c usbtiny -U flash:w:$(TARGET).hex
+
+all : $(TARGET).hex
 
 %.obj : %.o
 	$(CC) $(CFLAGS) $< -o $@
