@@ -74,7 +74,7 @@ CFLAGS = -g -O$(OPT) \
 -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums \
 -Wall -Wstrict-prototypes \
 -Wa,-adhlns=$(<:.c=.lst) \
-$(patsubst %,-I%,$(EXTRAINCDIRS))
+$(patsubst %,-I%,$(EXTRAINCDIRS)) -DF_CPU=8000000
 
 
 # Set a "language standard" compiler flag.

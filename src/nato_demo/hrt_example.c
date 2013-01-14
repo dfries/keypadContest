@@ -35,11 +35,9 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
-#define F_CPU 1000000UL
 #include <util/delay.h>
-#undef F_CPU
+#include "../../include/ATtiny2313_clock.h"
 
-#define F_CPU 11059200UL
 #define LED_A_WRITE_LATCH PD2
 #define LED_B_WRITE_LATCH PD3
 #define SW_A_READ_OUTPUTENABLE PD4
@@ -311,6 +309,10 @@ unsigned int taskTimers[NUM_TASKS]={0,0,0,0,0,0,0,0};
 // The main routine.  Everything starts here.
 int main(void)
 {
+	// This lets the Makefile set F_CPU to the Hz requested and keeps
+	// the delay calculations consistent.
+	// It expands to 6 bytes of program text (ATtiny2313).
+	CPU_PRESCALE(inline_cpu_hz_to_prescale(F_CPU));
 
   // Initialize all MCU hardware.
   init_devices();
@@ -322,12 +324,8 @@ int main(void)
       PORTD ^= SPKR_MASK;
       lightStates = i;
       task_2_write_LEDs();
-#undef F_CPU
-#define F_CPU 1000000UL
       for(uint16_t j=0; j<i; ++j)
         _delay_us(1);
-#undef F_CPU
-#define F_CPU 11059200UL
     }
   }
 
