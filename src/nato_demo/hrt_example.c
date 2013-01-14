@@ -317,6 +317,8 @@ int main(void)
   // Initialize all MCU hardware.
   init_devices();
 
+  /* test the speaker since timer0_init() and timer1_init() were not
+   * called in the code checked into git.
   for(;;)
   {
     for(uint16_t i=50; i<16000; ++i)
@@ -328,6 +330,7 @@ int main(void)
         _delay_us(1);
     }
   }
+  */
 
   // Start the active tasks
   taskBits = 0x0F; // Start tasks 0-3; change value if more tasks are needed.
@@ -348,6 +351,7 @@ int main(void)
       task_dispatch();
     }
   }
+  return -1;
 }
 
 // Call this routine to initialize all peripherals
