@@ -37,10 +37,17 @@ void Timer0::Set(RegEnum reg, uint8_t value)
 		Reg[REG_TIFR] &= ~value;
 		return;
 	}
+
+	Reg[reg]=value;
+
+	UpdateSleep();
+}
+
+void Timer0::UpdateSleep()
+{
 	// There isn't currently any way for the timer thread to restart
 	// based on updated registers values.  It will only complete the
 	// current sleep and start the next one.
-	Reg[reg]=value;
 	uint8_t mode=
 		((Reg[REG_TCCR0B] & _BV(WGM02))>>1) |
 		(Reg[REG_TCCR0A] & _BV(WGM01)) |

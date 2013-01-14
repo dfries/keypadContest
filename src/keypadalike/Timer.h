@@ -48,8 +48,11 @@ public:
 		const char *comp_b, const char *ovf);
 	virtual void Set(RegEnum reg, uint8_t value) = 0;
 	virtual uint8_t Get(RegEnum reg) = 0;
-	void SetSysteClock(uint32_t hz) { SystemClockHz=hz; }
+	void SetSysteClock(uint32_t hz);
 protected:
+	// Where the sleep time should be updated.  Called from the base
+	// class when the system clock rate chanes.
+	virtual void UpdateSleep() = 0;
 	void run();
 
 	/* Capture interrupt is used to record the counter time to

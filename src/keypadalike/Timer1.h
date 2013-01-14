@@ -45,6 +45,8 @@ public:
 	 * value.
 	 */
 	virtual uint8_t Get(RegEnum reg);
+protected:
+	virtual void UpdateSleep();
 };
 
 #endif // _TIMER_1_H

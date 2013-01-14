@@ -26,7 +26,10 @@ hardware buttons and LEDs.
 
 Timer::Timer(const uint8_t *reg, const char *capt, const char *comp_a,
 	const char *comp_b, const char *ovf) :
+	Capt(NULL),
 	CompA(NULL),
+	CompB(NULL),
+	Ovf(NULL),
 	SystemClockHz(1)
 {
 	memcpy(Reg, reg, sizeof(Reg));
@@ -59,6 +62,12 @@ Timer::Timer(const uint8_t *reg, const char *capt, const char *comp_a,
 		}
 		*/
 	}
+}
+
+void Timer::SetSysteClock(uint32_t hz)
+{
+	SystemClockHz=hz;
+	UpdateSleep();
 }
 
 void Timer::run()

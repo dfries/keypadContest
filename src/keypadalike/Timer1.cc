@@ -37,6 +37,7 @@ void Timer1::Set(RegEnum reg, uint8_t value)
 		Reg[REG_TIFR] &= ~value;
 		return;
 	}
+
 	Reg[reg]=value;
 
 	// Writing to the high value of the clock would write to a shared
@@ -53,6 +54,12 @@ void Timer1::Set(RegEnum reg, uint8_t value)
 	default:
 		break;
 	}
+
+	UpdateSleep();
+}
+
+void Timer1::UpdateSleep()
+{
 
 	// There isn't currently any way for the timer thread to restart
 	// based on updated registers values.  It will only complete the
@@ -113,6 +120,7 @@ void Timer1::Set(RegEnum reg, uint8_t value)
 	uint16_t top=*(uint16_t*)(Reg+REG_OCR1A);
 	// seconds per repitition
 	duration *= top;
+	printf("duration %8.6f\n", duration);
 
 	Seq sleep_array[sizeof(SleepSequence)/sizeof(*SleepSequence)]={{{0}}};
 	Seq &seq=sleep_array[0];

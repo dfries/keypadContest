@@ -35,6 +35,8 @@ public:
 	Timer0(const uint8_t *reg);
 	virtual void Set(RegEnum reg, uint8_t value);
 	virtual uint8_t Get(RegEnum reg);
+protected:
+	virtual void UpdateSleep();
 };
 
 #endif // _TIMER_0_H
