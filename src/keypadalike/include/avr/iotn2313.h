@@ -497,6 +497,8 @@
 //#define OCR0B   _SFR_IO8(0x3C)
 
 /* Interrupt vectors: */
+#if 0
+// These will be kept as a C function.
 
 /* External Interrupt Request 0 */
 #define INT0_vect_num			1
@@ -598,6 +600,8 @@
 #define WDT_OVERFLOW_vect		_VECTOR(18)
 #define SIG_WATCHDOG_TIMEOUT	_VECTOR(18)
 #define SIG_WDT_OVERFLOW		_VECTOR(18)
+
+#endif
 
 /* 38 = (18*2)+2: Number of vectors times two, plus the reset vector */
 #define _VECTORS_SIZE     38
