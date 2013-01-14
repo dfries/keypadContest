@@ -63,3 +63,8 @@ void _delay_us(double us)
 {
 	_delay_ms(us/1000);
 }
+
+void sei()
+{
+	printf("%s TODO\n", __func__);
+}
