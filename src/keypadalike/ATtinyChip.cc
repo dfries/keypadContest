@@ -83,7 +83,7 @@ const ATtinyChip& ATtinyChip::Set(RegEnum reg, RegOperation op)
 	case REG_CLKPR:
 		// clock change lock-out not implemented, assume the program
 		// is doing it correctly
-		if(v == CLKPCE)
+		if(v == _BV(CLKPCE))
 			break;
 		if(v > 8)
 			printf("ATtinyChip::Set invalid CLKPR value %u\n", v);

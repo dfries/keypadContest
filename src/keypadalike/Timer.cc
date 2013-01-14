@@ -41,10 +41,10 @@ Timer::Timer(const uint8_t *reg, const char *capt, const char *comp_a,
 		{ovf, &Ovf}};
 	for(size_t i=0; i<sizeof(funcs)/sizeof(*funcs); ++i)
 	{
+		if(!funcs[i].name)
+			continue;
 		if(void *sym=dlsym(RTLD_DEFAULT, funcs[i].name))
-		{
 			*funcs[i].f=(void(*)())sym;
-		}
 	}
 }
 
