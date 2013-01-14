@@ -49,6 +49,22 @@ RegObj OCR0B(REG_OCR0B);
 RegObj TIMSK(REG_TIMSK);
 RegObj TIFR(REG_TIFR);
 
+RegObj TCCR1A(REG_TCCR1A);
+RegObj TCCR1B(REG_TCCR1B);
+RegObj TCCR1C(REG_TCCR1C);
+RegObj16 TCNT1(REG_TCNT1);
+RegObj TCNT1L(REG_TCNT1L);
+RegObj TCNT1H(REG_TCNT1H);
+RegObj16 OCR1A(REG_OCR1A);
+RegObj OCR1AL(REG_OCR1AL);
+RegObj OCR1AH(REG_OCR1AH);
+RegObj16 OCR1B(REG_OCR1B);
+RegObj OCR1BL(REG_OCR1BL);
+RegObj OCR1BH(REG_OCR1BH);
+RegObj16 ICR1(REG_ICR1);
+RegObj ICR1L(REG_ICR1L);
+RegObj ICR1H(REG_ICR1H);
+
 RegObj& RegObj::operator=(uint8_t value)
 {
 	g_ATtiny=RegValue(Reg, value);
@@ -76,6 +92,57 @@ RegObj& RegObj::operator^=(uint8_t value)
 RegObj::operator uint8_t()
 {
 	return g_ATtiny.GetValue(Reg);
+}
+
+/* From 16-bit Timer/Counter1 "Accessing 16-bit Registers"
+ * "To do a 16-bit write, the high byte must be written before the low byte.
+ * For a 16-bit read, the low byte must be read before the high byte."
+ */
+RegObj16& RegObj16::operator=(uint16_t value)
+{
+	g_ATtiny=RegValue(RegH, value);
+	g_ATtiny=RegValue(Reg, value);
+	return *this;
+}
+
+RegObj16& RegObj16::operator|=(uint16_t value)
+{
+	// split into read, modify, write
+	// So it is read low, read high, modify, write high, write low,
+	// to execute the operations in the documented order.
+	uint16_t v16=*this;
+	v16|=value;
+	*this=v16;
+	return *this;
+}
+
+RegObj16& RegObj16::operator&=(uint16_t value)
+{
+	// split into read, modify, write
+	// So it is read low, read high, modify, write high, write low,
+	// to execute the operations in the documented order.
+	uint16_t v16=*this;
+	v16|=value;
+	*this=v16;
+	return *this;
+}
+
+RegObj16& RegObj16::operator^=(uint16_t value)
+{
+	// split into read, modify, write
+	// So it is read low, read high, modify, write high, write low,
+	// to execute the operations in the documented order.
+	uint16_t v16=*this;
+	v16|=value;
+	*this=v16;
+	return *this;
+}
+
+RegObj16::operator uint16_t()
+{
+	uint16_t value=g_ATtiny.GetValue(Reg) |
+		(uint16_t)g_ATtiny.GetValue(RegH)<<8;
+	return value;
 }
 
 // Unlike compiling for the ATtiny where it only needs this function if

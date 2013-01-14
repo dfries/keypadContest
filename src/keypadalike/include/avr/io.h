@@ -26,6 +26,7 @@ hardware buttons and LEDs.
 #include <stdint.h>
 
 #include "iotn2313.h"
+#include "common.h"
 
 // For source code compatibility rename main.  Don't include this from the
 // program's main.
@@ -59,8 +60,31 @@ enum RegEnum
 	REG_TCNT0=0x32,
 	REG_OCR0A=0x36,
 	REG_OCR0B=0x3C,
+	// Note both Timer 0 and Timer 1 use different bits in TIMSK and TIFR
 	REG_TIMSK=0x39,
 	REG_TIFR=0x38,
+
+	// Timer 1
+	REG_TCCR1A=0x2F,
+	REG_TCCR1B=0x2E,
+	REG_TCCR1C=0x22,
+	REG_TCNT1=0x2C, // 16 bit
+	REG_TCNT1L=0x2C,
+	REG_TCNT1H=0x2D,
+	REG_OCR1A=0x2A, // 16 bit
+	REG_OCR1AL=0x2A,
+	REG_OCR1AH=0x2B,
+	REG_OCR1B=0x28, // 16 bit
+	REG_OCR1BL=0x28,
+	REG_OCR1BH=0x29,
+	REG_ICR1=0x24, // 16 bit
+	REG_ICR1L=0x24,
+	REG_ICR1H=0x25,
+	// Note both Timer 0 and Timer 1 use different bits in TIMSK and TIFR
+	/*
+	REG_TIMSK=0x39,
+	REG_TIFR=0x38,
+	*/
 
 	// status register (and also the last register)
 	REG_SREG=0x3f
@@ -92,6 +116,20 @@ public:
 private:
 	RegEnum Reg;
 };
+class RegObj16
+{
+public:
+	RegObj16(RegEnum reg) : Reg(reg), RegH((RegEnum)(reg+1)) {}
+	RegObj16& operator=(uint16_t value);
+	RegObj16& operator|=(uint16_t value);
+	RegObj16& operator&=(uint16_t value);
+	RegObj16& operator^=(uint16_t value);
+	// allow reading back as an integer
+	operator uint16_t();
+private:
+	RegEnum Reg;
+	RegEnum RegH;
+};
 
 // ATtiny
 extern RegObj PIND;
@@ -116,5 +154,22 @@ extern RegObj OCR0A;
 extern RegObj OCR0B;
 extern RegObj TIMSK;
 extern RegObj TIFR;
+
+// Timer 0
+extern RegObj TCCR1A;
+extern RegObj TCCR1B;
+extern RegObj TCCR1C;
+extern RegObj16 TCNT1;
+extern RegObj TCNT1L;
+extern RegObj TCNT1H;
+extern RegObj16 OCR1A;
+extern RegObj OCR1AL;
+extern RegObj OCR1AH;
+extern RegObj16 OCR1B;
+extern RegObj OCR1BL;
+extern RegObj OCR1BH;
+extern RegObj16 ICR1;
+extern RegObj ICR1L;
+extern RegObj ICR1H;
 
 #endif // _AVR_IO_H_
