@@ -291,8 +291,7 @@ uint16_t EEMEM notePeriods[]={
 
 // Used for inter-task communications about the state of song toggled
 //  (NO_CHANGE, SONG_ON, SONG_OFF).
-//uint8_t songStateChanged = SONG_OFF;
-uint8_t songStateChanged = SONG_ON;
+uint8_t songStateChanged = SONG_OFF;
 
 // Used for inter-task communications about a new note being played.
 uint8_t newNote = 0;
