@@ -100,7 +100,7 @@ RegObj::operator uint8_t()
  */
 RegObj16& RegObj16::operator=(uint16_t value)
 {
-	g_ATtiny=RegValue(RegH, value);
+	g_ATtiny=RegValue(RegH, value>>8);
 	g_ATtiny=RegValue(Reg, value);
 	return *this;
 }
@@ -122,7 +122,7 @@ RegObj16& RegObj16::operator&=(uint16_t value)
 	// So it is read low, read high, modify, write high, write low,
 	// to execute the operations in the documented order.
 	uint16_t v16=*this;
-	v16|=value;
+	v16&=value;
 	*this=v16;
 	return *this;
 }
@@ -133,15 +133,16 @@ RegObj16& RegObj16::operator^=(uint16_t value)
 	// So it is read low, read high, modify, write high, write low,
 	// to execute the operations in the documented order.
 	uint16_t v16=*this;
-	v16|=value;
+	v16^=value;
 	*this=v16;
 	return *this;
 }
 
 RegObj16::operator uint16_t()
 {
-	uint16_t value=g_ATtiny.GetValue(Reg) |
-		(uint16_t)g_ATtiny.GetValue(RegH)<<8;
+	// read the low byte first as that stores the high byte in a temporary
+	uint16_t value=g_ATtiny.GetValue(Reg);
+	value |= (uint16_t)g_ATtiny.GetValue(RegH)<<8;
 	return value;
 }
 

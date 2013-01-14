@@ -23,10 +23,12 @@ hardware buttons and LEDs.
 #include "ATtinyChip.h"
 #include "HallKeypad.h"
 #include "Timer0.h"
+#include "Timer1.h"
 
 ATtinyChip::ATtinyChip() :
 	Keypad(NULL),
 	TimerObj0(NULL),
+	TimerObj1(NULL),
 	SystemClockHz(1000000) // ATtiny2313 default, selectable by fuses
 {
 	memset(Reg, 0, sizeof(Reg));
@@ -91,6 +93,8 @@ const ATtinyChip& ATtinyChip::Set(RegEnum reg, RegOperation op)
 		SystemClockHz=8000000 / (1<<v);
 		if(TimerObj0)
 			TimerObj0->SetSysteClock(SystemClockHz);
+		if(TimerObj1)
+			TimerObj1->SetSysteClock(SystemClockHz);
 		break;
 	case REG_PORTD:
 	case REG_PORTB:
@@ -114,6 +118,36 @@ const ATtinyChip& ATtinyChip::Set(RegEnum reg, RegOperation op)
 		}
 		if(TimerObj0)
 			TimerObj0->Set(reg, v);
+		// Fall through for REG_TIMSK or REG_TIFR as TimerObj1 needs
+		// them as well.
+		if(reg != REG_TIMSK && reg != REG_TIFR)
+			break;
+	case REG_TCCR1A:
+	case REG_TCCR1B:
+	case REG_TCCR1C:
+	case REG_TCNT1:
+	case REG_TCNT1H:
+	case REG_OCR1A:
+	case REG_OCR1AH:
+	case REG_OCR1B:
+	case REG_OCR1BH:
+	case REG_ICR1:
+	case REG_ICR1H:
+		// Only allocate on the first non-zero write.
+		if(!TimerObj1 && v)
+		{
+			TimerObj1=new Timer1(Reg);
+			TimerObj1->SetSysteClock(SystemClockHz);
+			TimerObj1->start();
+		}
+		if(TimerObj1)
+			TimerObj1->Set(reg, v);
+		break;
+	// registers that just need to update the register store
+	case REG_DDRD:
+	case REG_DDRB:
+	case REG_DDRA:
+		break;
 	default:
 		printf("unhandled register 0x%2x\n", reg);
 		break;
@@ -131,9 +165,23 @@ uint8_t ATtinyChip::GetValue(RegEnum reg)
 	// Only the counter and interrupt flag registers are modified
 	// from the timer counter, the rest can use the last written value.
 	case REG_TCNT0:
-	case REG_TIFR:
 		if(TimerObj0)
 			return TimerObj0->Get(reg);
+	case REG_TCNT1:
+	case REG_TCNT1H:
+		if(TimerObj1)
+			return TimerObj1->Get(reg);
+	case REG_TIFR:
+		{
+			// Each timer has different bits in the same
+			// register, combine them into one.
+			uint8_t flags=0;
+			if(TimerObj0)
+				flags |= TimerObj0->Get(reg);
+			if(TimerObj1)
+				flags |= TimerObj1->Get(reg);
+			return flags;
+		}
 	default:
 		break;
 	}

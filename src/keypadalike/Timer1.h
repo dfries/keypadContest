@@ -22,4 +22,29 @@ hardware buttons and LEDs.
 
 #ifndef _TIMER_1_H
 #define _TIMER_1_H
+
+#include "Timer.h"
+#include <avr/io.h>
+
+/* deals with the registers specific to the 16 bit timer/counter 1
+ */
+class Timer1 : public Timer
+{
+public:
+	/* reg is a pointer to the current register values. */
+	Timer1(const uint8_t *reg);
+	/* The ATtiny is an 8 bit microcontroller, all register writes are
+	 * 8 bit, even to 16 bit registers.  Write to the high byte (which will
+	 * go into the register array), then the low byte (which will combine
+	 * the two and do the operation).
+	 */
+	virtual void Set(RegEnum reg, uint8_t value);
+	/* Like read, only in reverse for 16 bit registers.  Read the low
+	 * byte (which will read the 16 bit value and return the low byte),
+	 * then read the high byte to the the previous read's high byte
+	 * value.
+	 */
+	virtual uint8_t Get(RegEnum reg);
+};
+
 #endif // _TIMER_1_H

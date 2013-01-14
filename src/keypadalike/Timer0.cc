@@ -42,7 +42,7 @@ void Timer0::Set(RegEnum reg, uint8_t value)
 	// current sleep and start the next one.
 	Reg[reg]=value;
 	uint8_t mode=
-		(Reg[REG_TCCR0B] & _BV(WGM02)>>1) |
+		((Reg[REG_TCCR0B] & _BV(WGM02))>>1) |
 		(Reg[REG_TCCR0A] & _BV(WGM01)) |
 		(Reg[REG_TCCR0A] & _BV(WGM00));
 	// splits register A and B
@@ -79,7 +79,7 @@ void Timer0::Set(RegEnum reg, uint8_t value)
 	}
 	// CTC mode clears when the counter gets to OCR0A, other modes
 	// will use other registers.
-	double duration = SecPerTick();
+	double duration = SecPerTick(REG_TCCR0B);
 	// ignoring B for now and only using CTC register A
 	uint8_t top=Reg[REG_OCR0A];
 	// seconds per repitition
@@ -89,7 +89,6 @@ void Timer0::Set(RegEnum reg, uint8_t value)
 	Seq &seq=sleep_array[0];
 	seq.Duration.tv_sec=(long)duration;
 	seq.Duration.tv_nsec=(duration-seq.Duration.tv_sec)*1e9;
-	seq.IrqFlagReg=REG_TIFR;
 	seq.IrqFlag=_BV(OCF0A);
 	if(Reg[REG_TIMSK] & _BV(OCIE0A))
 		seq.func=CompA;
@@ -114,32 +113,5 @@ uint8_t Timer0::Get(RegEnum reg)
 	// This is really only valid if the timer is running and it is
 	// less than or equal to the current TOP.  It can be greater than
 	// top if the sleep is late.
-	return (uint8_t)((now - Start) * SecPerTick());
-}
-
-double Timer0::SecPerTick()
-{
-	uint8_t clock=Reg[REG_TCCR0B] & 0x7;
-	double prescale;
-	switch(clock)
-	{
-	case 1:
-		prescale=1;
-		break;
-	case 2:
-		prescale=8;
-		break;
-	case 3:
-		prescale=64;
-		break;
-	case 4:
-		prescale=256;
-		break;
-	default:
-	case 5:
-		prescale=1024;
-		break;
-	}
-	// seconds per clock tick
-	return prescale/SystemClockHz;
+	return (uint8_t)((now - Start) * SecPerTick(REG_TCCR0B));
 }

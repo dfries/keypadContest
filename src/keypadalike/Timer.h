@@ -63,6 +63,8 @@ protected:
 	// timer overflow */
 	void (*Ovf)();
 
+	double SecPerTick(RegEnum tccrxb);
+
 	uint8_t Reg[REG_SREG];
 	uint32_t SystemClockHz;
 
@@ -83,7 +85,7 @@ protected:
 		// When the interrupt goes off this flag is set, and cleared
 		// by writing 1 to the register or when the interrupt vector
 		// executes.
-		uint8_t IrqFlagReg, IrqFlag;
+		uint8_t IrqFlag;
 		void (*func)();
 	} SleepSequence[3];
 

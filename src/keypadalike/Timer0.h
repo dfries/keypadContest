@@ -26,6 +26,8 @@ hardware buttons and LEDs.
 #include "Timer.h"
 #include <avr/io.h>
 
+/* deals with the registers specific to the 8 bit timer/counter 0
+ */
 class Timer0 : public Timer
 {
 public:
@@ -33,8 +35,6 @@ public:
 	Timer0(const uint8_t *reg);
 	virtual void Set(RegEnum reg, uint8_t value);
 	virtual uint8_t Get(RegEnum reg);
-private:
-	double SecPerTick();
 };
 
 #endif // _TIMER_0_H

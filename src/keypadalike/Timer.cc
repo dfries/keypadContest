@@ -85,10 +85,10 @@ void Timer::run()
 					running=true;
 				}
 				nanosleep(&seq.Duration, NULL);
-				Reg[seq.IrqFlagReg]|=seq.IrqFlag;
+				Reg[REG_TIFR]|=seq.IrqFlag;
 				if(seq.func)
 				{
-					Reg[seq.IrqFlagReg]&=~seq.IrqFlag;
+					Reg[REG_TIFR]&=~seq.IrqFlag;
 					seq.func();
 				}
 			}
@@ -99,4 +99,31 @@ void Timer::run()
 			Cond.wait(&Mutex);
 		}
 	}
+}
+
+double Timer::SecPerTick(RegEnum tccrxb)
+{
+	uint8_t clock=Reg[tccrxb] & 0x7;
+	double prescale;
+	switch(clock)
+	{
+	case 1:
+		prescale=1;
+		break;
+	case 2:
+		prescale=8;
+		break;
+	case 3:
+		prescale=64;
+		break;
+	case 4:
+		prescale=256;
+		break;
+	default:
+	case 5:
+		prescale=1024;
+		break;
+	}
+	// seconds per clock tick
+	return prescale/SystemClockHz;
 }

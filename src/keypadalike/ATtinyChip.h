@@ -28,6 +28,7 @@ hardware buttons and LEDs.
 
 class HallKeypad;
 class Timer0;
+class Timer1;
 
 /* This class keeps track of the ATtiny register states and requied
  * emulations.  Use the ATtiny class as a wrapper when accessing the
@@ -55,6 +56,7 @@ private:
 	uint8_t Reg[REG_SREG];
 	HallKeypad *Keypad;
 	Timer0 *TimerObj0;
+	Timer1 *TimerObj1;
 	uint32_t SystemClockHz;
 };
 
