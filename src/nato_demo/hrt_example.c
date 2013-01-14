@@ -383,6 +383,9 @@ void init_devices(void)
   //  default is for the song to not be playing.
   lightStates = (lfsr_prand() << 2) | 0x1;
 
+  timer0_init();
+  timer1_init();
+
   sei(); // Enable interrupts.
   // All peripherals are now initialized.
 }
