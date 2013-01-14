@@ -37,14 +37,27 @@ Timer::Timer(const uint8_t *reg, const char *capt, const char *comp_a,
 	} funcs[] = {
 		{capt, &Capt},
 		{comp_a, &CompA},
-		{comp_b, &CompA},
+		{comp_b, &CompB},
 		{ovf, &Ovf}};
 	for(size_t i=0; i<sizeof(funcs)/sizeof(*funcs); ++i)
 	{
 		if(!funcs[i].name)
 			continue;
+		/* Note dlsym can only find symbols in shared objects,
+		 * if the function is compiled into the executable it
+		 * will not find it.
+		 */
 		if(void *sym=dlsym(RTLD_DEFAULT, funcs[i].name))
+		{
+			//printf("%s is %p\n", funcs[i].name, sym);
 			*funcs[i].f=(void(*)())sym;
+		}
+		/*
+		else
+		{
+			printf("%s not found\n", funcs[i].name);
+		}
+		*/
 	}
 }
 

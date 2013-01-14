@@ -90,13 +90,14 @@ void Timer0::Set(RegEnum reg, uint8_t value)
 	seq.Duration.tv_sec=(long)duration;
 	seq.Duration.tv_nsec=(duration-seq.Duration.tv_sec)*1e9;
 	seq.IrqFlagReg=REG_TIFR;
-	seq.IrqFlag=OCF0A;
-	if(Reg[REG_TIMSK] & OCIE0A)
+	seq.IrqFlag=_BV(OCF0A);
+	if(Reg[REG_TIMSK] & _BV(OCIE0A))
 		seq.func=CompA;
 
 	{
 		QMutexLocker locker(&Mutex);
 		memcpy(&SleepSequence, &sleep_array, sizeof(SleepSequence));
+		Cond.wakeAll();
 	}
 }
 

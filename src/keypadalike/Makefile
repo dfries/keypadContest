@@ -10,13 +10,16 @@ QT_FLAGS:=$(shell pkg-config --cflags QtGui) \
 -I/usr/include/QtMobility -I/usr/include/QtMultimediaKit
 QT_LIBS:=$(shell pkg-config --libs QtGui) -lQtMultimediaKit
 CXXFLAGS=-g -Wall -std=c++11 -MMD -MP $(QT_FLAGS) -Iinclude -DF_CPU=8000000
-LD_LIBS=$(QT_LIBS) -ldl
+LD_FLAGS=-L.
+LD_LIBS=$(QT_LIBS) -ldl -lavr_target
 
 #AVR_SRC=../keypadContest/src/cpu_clock/cpu_clock.cc
 #AVR_SRC=../keypadContest/src/input/input.cc
 AVR_SRC=../keypadContest/src/nato_demo/hrt_example.cc
 
-keypadalike: avr_target.o \
+all: libavr_target.so keypadalike
+
+keypadalike: \
 	avr_util.o avr_io.o \
 	ATtiny.o ATtinyChip.o MicroMain.o moc_MicroMain.o \
 	main.o SoftIO.o moc_SoftIO.o \
@@ -27,9 +30,12 @@ keypadalike: avr_target.o \
 	$(LINK.o) -o $@ $^
 
 avr_target.o: $(AVR_SRC)
-	$(COMPILE.cc) -o $@ $<
+	$(COMPILE.cc) -fPIC -o $@ $<
 
-.PHONY: clean
+libavr_target.so: avr_target.o
+	$(LINK.cc) -shared $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+.PHONY: all clean
 clean:
 	rm -f *.d *.o moc_*.cc moc_*.d moc_*.o keypadalike
 
@@ -37,6 +43,6 @@ moc_%.cc: %.h
 	moc -o $@ $^
 
 # Linking c++ not c code
-LINK.o=$(CXX) $(LDFLAGS) $(LD_LIBS) $(TARGET_ARCH)
+LINK.o=$(CXX) $(LDFLAGS) $(LD_FLAGS) $(LD_LIBS) $(TARGET_ARCH)
 
 -include $(wildcard *.d)
