@@ -88,8 +88,10 @@ const ATtinyChip& ATtinyChip::Set(RegEnum reg, RegOperation op)
 		if(v == _BV(CLKPCE))
 			break;
 		if(v > 8)
+		{
 			printf("ATtinyChip::Set invalid CLKPR value %u\n", v);
 			break;
+		}
 		SystemClockHz=8000000 / (1<<v);
 		if(TimerObj0)
 			TimerObj0->SetSysteClock(SystemClockHz);
