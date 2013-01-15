@@ -325,33 +325,11 @@ int main(void)
 	PORTD |= (1 << SW_A_READ_OUTPUTENABLE);
 	PORTD |= (1 << SW_B_READ_OUTPUTENABLE);
 	
-	// led chaser sequence
-	uint8_t i;
-	for( i = 0 ; i < 2; i++ )
-	{
-		uint16_t leds = 1;
-		// stop after all 10 leds have been illuminated
-		while( leds < (1<<11) )
-		{
-			writeLEDs( leds );
-
-			_delay_ms( 100 );
-
-			leds = leds << 1;
-		}
-	}
-
-	// blink all leds 2 times
-	writeLEDs( 0x0000 );
-	_delay_ms( 100 );
-	writeLEDs( 0xffff );
-	_delay_ms( 100 );
-	writeLEDs( 0x0000 );
-	_delay_ms( 100 );
-	writeLEDs( 0xffff );
-	_delay_ms( 100 );
-	writeLEDs( 0x0000 );
+	// set up timer1 with a prescale of 1
+	// this timer will later be used to seed the random number generator
+	TCCR1B |= (1 << CS10);
 	
+	uint8_t i;
 	
 	while( 1 )
 	{
@@ -400,6 +378,9 @@ int main(void)
 		_delay_ms( 1000 );
 
 		writeLEDs( 0 );
+		
+		// seed the random number generator with the value of timer1
+		srand( TCNT1 );
 
 		// run the game mode that was selected
 		switch( gameMode )
