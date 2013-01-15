@@ -35,6 +35,7 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
+#include <avr/sleep.h>
 #include <util/delay.h>
 #include "../../include/ATtiny2313_clock.h"
 
@@ -337,10 +338,21 @@ int main(void)
   // This will repeat until power is lost, or the MCU is reset.
   while(1)
   {
+    #ifndef __AVR
+    // Be a little nicer when not on the avr hardware since the speaker
+    // interrupt really is on another thread, this thread doesn't need to
+    // wake up every time the interrupt goes off.
+    _delay_us(1000);
+    #endif
+    // sleep while waiting for an interrupt
+    // see avr/sleep.h by disabling the interrupt the check is atomic
+    set_sleep_mode(SLEEP_MODE_IDLE);
+    cli();
 
     // If another time slice has elapsed
     if (tickFlag)
     {
+      sei();
 
       // Reset this flag so this code isn't run again until another slice has
       //  elapsed.
@@ -348,6 +360,13 @@ int main(void)
 
       // Run the next appropriate task (if appropriate for this pass).
       task_dispatch();
+    }
+    else
+    {
+      sleep_enable();
+      sei();
+      sleep_cpu();
+      sleep_disable();
     }
   }
   return -1;
