@@ -412,6 +412,11 @@ void task_dispatch()
 
 int main()
 {
+	// This lets the Makefile set F_CPU to the Hz requested and keeps
+	// the delay calculations consistent.
+	// It expands to 6 bytes of program text (ATtiny2313).
+	CPU_PRESCALE(inline_cpu_hz_to_prescale(F_CPU));
+
 	// Initialize all MCU hardware.
 	init_devices();
 
@@ -419,18 +424,23 @@ int main()
 	// a random initial seed value.  Don't use the fastest speed in
 	// case it is a lower voltage environment that doesn't support the
 	// higher rates.  The timer counter clocks need to be running.
-	for(uint8_t i=3; i<6; ++i)
+	// The datasheet says it isn't know when it switches CPU clock
+	// speeds, apparently all the clocks and timers are switching
+	// together and it always comes up with the same answer.
+	#if 0
+	for(uint8_t h=0; h<16; ++h)
 	{
-		CPU_PRESCALE(i);
-		uint8_t clock = TCNT0 ^ TCNT1L;
-		for(uint8_t j=0; j<clock; ++j)
-			lfsr_prand();
+		for(uint8_t i=2; i<8; ++i)
+		{
+			CPU_PRESCALE(i);
+			uint8_t clock = TCNT0 ^ TCNT1L;
+			for(uint8_t j=0; j<clock; ++j)
+			{
+				write_LEDs(lfsr_prand());
+			}
+		}
 	}
-
-	// This lets the Makefile set F_CPU to the Hz requested and keeps
-	// the delay calculations consistent.
-	// It expands to 6 bytes of program text (ATtiny2313).
-	CPU_PRESCALE(inline_cpu_hz_to_prescale(F_CPU));
+	#endif
 
 	uint16_t leds=lfsr_prand() | lfsr_prand()<<8;
 	write_LEDs(leds);
