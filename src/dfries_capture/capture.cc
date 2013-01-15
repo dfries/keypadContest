@@ -19,7 +19,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
-#include <avr/eeprom.h>
 #include <avr/sleep.h>
 #include <util/atomic.h>
 #ifndef __AVR
@@ -67,7 +66,7 @@ const uint8_t Timer0_TOP=250;
 //  uncomment as needed.  If lower frequencies are needed, the prescaler will
 //  need to be changed (see CS12:0 in the datasheet).
 #if 0
-uint16_t EEMEM notePeriods[]={
+uint16_t PROGMEM notePeriods[]={
  //    Cycles-1  Note Frequency Index
     // 63333, // F2   87.31
     // 59779, // F#2  92.50
@@ -147,12 +146,30 @@ enum ToneValues
 	TONE_GAME_OVER,
 	TONE_GAME_OVER_PT2
 };
-uint16_t EEMEM notePeriods[TONE_GAME_OVER_PT2+1]={
+#if 0
+uint16_t PROGMEM notePeriods[TONE_GAME_OVER_PT2+1]={
        8388,  // E5   659.26    0x9
        7473,  // F#5  739.99    0xA
        14106, // G4   392.00    0x1
        12567, // A4   440.00    0x3
        15834, // F4   349.23    0x0
+#endif
+const uint16_t PROGMEM notePeriods[]={
+       15834, // F4   349.23    0x0
+    // 14945, // F#4  369.99
+       14106, // G4   392.00    0x1
+       13314, // G#4  415.31    0x2
+       12567, // A4   440.00    0x3
+       11862, // Bb4  466.16    0x4
+       11196, // B4   493.88    0x5
+       10568, // C5   523.25    0x6
+    // 9975,  // C#5  554.37
+       9415,  // D5   587.33    0x7
+       8886,  // Eb5  622.25    0x8
+       8388,  // E5   659.26    0x9
+    // 7917,  // F5   698.46
+       7473,  // F#5  739.99    0xA
+       7053,  // G5   783.99    0xB
 };
 
 // If non-zero, a tick has elapsed.
@@ -223,14 +240,16 @@ void start_tone(ToneValues tone)
 {
 	// set speaker pins to opposite states, they will be toggled from here
 	// This assumes they are already the same value.
-	//PORTD ^= _BV(SPKR_PIN_1);
+	PORTD ^= _BV(SPKR_PIN_1);
+	/*
 	uint8_t portd=PORTD;
 	PORTD=_BV(SPKR_PIN_1) | (portd & ~_BV(SPKR_PIN_2));
 	portd=PORTD;
+	*/
 	//PORTD ^= _BV(SPKR_PIN_1);
 
 	// Timer1 output compare A for tone period
-	OCR1A = eeprom_read_word(notePeriods + tone);
+	OCR1A = pgm_read_word(&notePeriods[tone]);
 }
 
 void stop_tone()
@@ -355,16 +374,27 @@ void SelectTone()
 		uint16_t value=read_switches();
 		switch(value)
 		{
+		case 0xfffe:
+			start_tone((ToneValues)5);
+			++counter;
+			break;
+		case 0xfffd:
+			start_tone((ToneValues)6);
+			++counter;
+			break;
 		case 0xfffb:
-			OCR0A += 20;
+			start_tone((ToneValues)7);
+			//OCR0A += 20;
 			++counter;
 			break;
 		case 0xfff7:
-			OCR0A -= 20;
+			start_tone((ToneValues)8);
+			//OCR0A -= 20;
 			++counter;
 			break;
 		case 0xffef:
-			stop_tone();
+			start_tone((ToneValues)9);
+			//stop_tone();
 			++counter;
 			break;
 		case 0xffdf:
@@ -456,13 +486,15 @@ int main()
 		// sleep while waiting for an interrupt
 		// see avr/sleep.h by disabling the interrupt the check is
 		// atomic
+		/*
 		set_sleep_mode(SLEEP_MODE_IDLE);
 		cli();
+		*/
 
 		// If another time slice has elapsed
 		if(tickFlag)
 		{
-			sei();
+			//sei();
 
 			// Reset this flag so this code isn't run again until
 			// another slice has elapsed.
@@ -478,6 +510,7 @@ int main()
 				leds ^= 2;
 			write_LEDs(leds);
 		}
+		/*
 		else
 		{
 			sleep_enable();
@@ -485,6 +518,7 @@ int main()
 			sleep_cpu();
 			sleep_disable();
 		}
+		*/
 	}
 
 	return -1;
@@ -501,4 +535,9 @@ ISR(TIMER1_COMPA_vect)
 {
 	// Toggle the speaker pins to make a click.
 	PORTD ^= SPKR_MASK;
+	/*
+	static uint16_t state;
+	write_LEDs(++state);
+	*/
+	write_LEDs(OCR1A);
 }
