@@ -75,7 +75,7 @@ uint8_t HallKeypad::GetPort(RegEnum reg)
 		return PortD;
 	if(reg != REG_PINB)
 		return 0xff & rand();
-	uint8_t value;
+	uint8_t value=0;
 	// button input "Output Enable" line is active low
 	uint8_t invD=~PortD;
 	if(invD & (_BV(PD4) | _BV(PD5)))
