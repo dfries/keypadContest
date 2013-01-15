@@ -60,7 +60,6 @@ void Timer1::Set(RegEnum reg, uint8_t value)
 
 void Timer1::UpdateSleep()
 {
-
 	// There isn't currently any way for the timer thread to restart
 	// based on updated registers values.  It will only complete the
 	// current sleep and start the next one.
@@ -117,7 +116,8 @@ void Timer1::UpdateSleep()
 	// will use other registers.
 	double duration = SecPerTick(REG_TCCR1B);
 	// ignoring B for now and only using CTC register A
-	uint16_t top=*(uint16_t*)(Reg+REG_OCR1A);
+	uint16_t top;
+	memcpy(&top, Reg+REG_OCR1A, sizeof(top));
 	// mode 0 is normal mode, maximum range
 	if(mode == 0)
 		top = 0xffff;
