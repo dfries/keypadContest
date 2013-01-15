@@ -62,6 +62,23 @@ void ATtiny::MainStop()
 	Cond.wakeAll();
 }
 
+void ATtiny::MainSleep()
+{
+	QMutexLocker locker(&Mutex);
+	// like MainStop let any other thread run
+	--ThreadsRunning;
+	Cond.wakeAll();
+
+	// wait for an interrupt to broadcast
+	Cond.wait(&Mutex);
+
+	// like MainStart wait to run
+	while(ThreadsRunning && !locked_IrqEnabled())
+		Cond.wait(&Mutex);
+
+	++ThreadsRunning;
+}
+
 void ATtiny::IntStart()
 {
 	QMutexLocker locker(&Mutex);

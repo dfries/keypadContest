@@ -84,6 +84,14 @@ public:
 	void MainStop();
 	void IntStart();
 	void IntStop();
+	/* Causes the main thread to sleep until an interrupt handler
+	 * returns.  Unlike the real hardare there is a race condition.
+	 * In the hardware enabling interrupts followed by sleep guarantees
+	 * that the sleep will be executed before any interrupt goes off,
+	 * but that's currently not the case here, an interrupt can be
+	 * missed between those two calls.
+	 */
+	void MainSleep();
 	void EnableInterrupts(bool enable)
 	{
 		QMutexLocker locker(&Mutex);
