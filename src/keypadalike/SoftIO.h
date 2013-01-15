@@ -49,6 +49,7 @@ protected:
 	void keyReleaseEvent(QKeyEvent *event);
 
 private:
+	void UpdateButtons(uint16_t was);
 	LEDWidget *LEDs[BUTTON_COUNT];
 	QCheckBox *Buttons[BUTTON_COUNT];
 	uint16_t LEDState;

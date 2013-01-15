@@ -167,7 +167,10 @@ void SoftIO::keyPressEvent(QKeyEvent *event)
 		break;
 	}
 	if(state!=ButtonState)
+	{
 		SetButtons(ButtonState);
+		UpdateButtons(state);
+	}
 }
 
 void SoftIO::keyReleaseEvent(QKeyEvent *event)
@@ -231,5 +234,23 @@ void SoftIO::keyReleaseEvent(QKeyEvent *event)
 		break;
 	}
 	if(state!=ButtonState)
+	{
 		SetButtons(ButtonState);
+		UpdateButtons(state);
+	}
+}
+
+void SoftIO::UpdateButtons(uint16_t was)
+{
+	uint16_t differs=was^ButtonState;
+	uint16_t bit;
+	for(int i=0; i<10; ++i)
+	{
+		bit=1<<i;
+		if(differs & bit)
+		{
+			Buttons[i]->setCheckState(ButtonState & bit ?
+				Qt::Checked : Qt::Unchecked);
+		}
+	}
 }
