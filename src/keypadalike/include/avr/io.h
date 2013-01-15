@@ -108,6 +108,8 @@ class RegObj
 public:
 	RegObj(RegEnum reg) : Reg(reg) {}
 	RegObj& operator=(uint8_t value);
+	RegObj& operator+=(uint8_t value);
+	RegObj& operator-=(uint8_t value);
 	RegObj& operator|=(uint8_t value);
 	RegObj& operator&=(uint8_t value);
 	RegObj& operator^=(uint8_t value);
@@ -126,6 +128,8 @@ class RegObj_SREG
 public:
 	RegObj_SREG() : Reg(REG_SREG) {}
 	RegObj_SREG& operator=(uint8_t value);
+	RegObj_SREG& operator+=(uint8_t value);
+	RegObj_SREG& operator-=(uint8_t value);
 	RegObj_SREG& operator|=(uint8_t value);
 	RegObj_SREG& operator&=(uint8_t value);
 	RegObj_SREG& operator^=(uint8_t value);
@@ -140,6 +144,8 @@ class RegObj16
 public:
 	RegObj16(RegEnum reg) : Reg(reg), RegH((RegEnum)(reg+1)) {}
 	RegObj16& operator=(uint16_t value);
+	RegObj16& operator+=(uint16_t value);
+	RegObj16& operator-=(uint16_t value);
 	RegObj16& operator|=(uint16_t value);
 	RegObj16& operator&=(uint16_t value);
 	RegObj16& operator^=(uint16_t value);

@@ -73,6 +73,18 @@ RegObj& RegObj::operator=(uint8_t value)
 	return *this;
 }
 
+RegObj& RegObj::operator+=(uint8_t value)
+{
+	g_ATtiny+=RegValue(Reg, value);
+	return *this;
+}
+
+RegObj& RegObj::operator-=(uint8_t value)
+{
+	g_ATtiny-=RegValue(Reg, value);
+	return *this;
+}
+
 RegObj& RegObj::operator|=(uint8_t value)
 {
 	g_ATtiny|=RegValue(Reg, value);
@@ -150,6 +162,28 @@ RegObj16& RegObj16::operator=(uint16_t value)
 {
 	g_ATtiny=RegValue(RegH, value>>8);
 	g_ATtiny=RegValue(Reg, value);
+	return *this;
+}
+
+RegObj16& RegObj16::operator+=(uint16_t value)
+{
+	// split into read, modify, write
+	// So it is read low, read high, modify, write high, write low,
+	// to execute the operations in the documented order.
+	uint16_t v16=*this;
+	v16+=value;
+	*this=v16;
+	return *this;
+}
+
+RegObj16& RegObj16::operator-=(uint16_t value)
+{
+	// split into read, modify, write
+	// So it is read low, read high, modify, write high, write low,
+	// to execute the operations in the documented order.
+	uint16_t v16=*this;
+	v16-=value;
+	*this=v16;
 	return *this;
 }
 

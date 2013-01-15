@@ -42,6 +42,8 @@ public:
 	// It is using the operator syntax just to make it obvious what
 	// operation they represent.
 	const ATtinyChip& operator=(RegValue arg);
+	const ATtinyChip& operator+=(RegValue arg);
+	const ATtinyChip& operator-=(RegValue arg);
 	const ATtinyChip& operator|=(RegValue arg);
 	const ATtinyChip& operator&=(RegValue arg);
 	const ATtinyChip& operator^=(RegValue arg);

@@ -106,6 +106,18 @@ public:
 		Chip=arg;
 		return *this;
 	}
+	const ATtiny& operator+=(RegValue arg)
+	{
+		QMutexLocker locker(&Mutex);
+		Chip+=arg;
+		return *this;
+	}
+	const ATtiny& operator-=(RegValue arg)
+	{
+		QMutexLocker locker(&Mutex);
+		Chip-=arg;
+		return *this;
+	}
 	const ATtiny& operator|=(RegValue arg)
 	{
 		QMutexLocker locker(&Mutex);

@@ -39,6 +39,16 @@ const ATtinyChip& ATtinyChip::operator=(RegValue arg)
 	return Set(arg.Reg, [arg](uint8_t &v) { v=arg.Value; });
 }
 
+const ATtinyChip& ATtinyChip::operator+=(RegValue arg)
+{
+	return Set(arg.Reg, [arg](uint8_t &v) { v+=arg.Value; });
+}
+
+const ATtinyChip& ATtinyChip::operator-=(RegValue arg)
+{
+	return Set(arg.Reg, [arg](uint8_t &v) { v-=arg.Value; });
+}
+
 const ATtinyChip& ATtinyChip::operator|=(RegValue arg)
 {
 	return Set(arg.Reg, [arg](uint8_t &v) { v|=arg.Value; });
