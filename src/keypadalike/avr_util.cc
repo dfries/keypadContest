@@ -68,3 +68,8 @@ void sei()
 {
 	printf("%s TODO\n", __func__);
 }
+
+void cli()
+{
+	printf("%s TODO\n", __func__);
+}
