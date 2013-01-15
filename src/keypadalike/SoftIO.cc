@@ -48,7 +48,8 @@ SoftIO::SoftIO() :
 		}
 		LEDs[i]=new LEDWidget;
 		hled->addWidget(LEDs[i]);
-		Buttons[i]=new QCheckBox(QString("%1").arg(i));
+		// 1 based labels
+		Buttons[i]=new QCheckBox(QString("%1").arg(i+1));
 		hbutton->addWidget(Buttons[i]);
 		// Bounce the signal through a unique object to be able to
 		// identify which object sent it when it gets to the local slot.
