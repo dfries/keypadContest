@@ -172,4 +172,6 @@ extern RegObj16 ICR1;
 extern RegObj ICR1L;
 extern RegObj ICR1H;
 
+extern RegObj SREG;
+
 #endif // _AVR_IO_H_

@@ -65,6 +65,8 @@ RegObj16 ICR1(REG_ICR1);
 RegObj ICR1L(REG_ICR1L);
 RegObj ICR1H(REG_ICR1H);
 
+RegObj SREG(REG_SREG);
+
 RegObj& RegObj::operator=(uint8_t value)
 {
 	g_ATtiny=RegValue(Reg, value);
