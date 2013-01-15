@@ -28,7 +28,7 @@ hardware buttons and LEDs.
 // not required for emulation
 #define EEMEM
 
-inline uint16_t eeprom_read_word(uint16_t *addr)
+inline uint16_t eeprom_read_word(const uint16_t *addr)
 {
 	return *addr;
 
@@ -39,7 +39,7 @@ inline void eeprom_write_word(uint16_t *addr, uint16_t value)
 	*addr = value;
 }
 
-inline uint8_t eeprom_read_byte(uint8_t *addr)
+inline uint8_t eeprom_read_byte(const uint8_t *addr)
 {
 	return *addr;
 
