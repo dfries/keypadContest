@@ -19,6 +19,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+#include <avr/eeprom.h>
 #include <avr/sleep.h>
 #include <util/atomic.h>
 #ifndef __AVR
@@ -356,8 +357,10 @@ static uint8_t direction, tries;
 // One of the button that should have been pressed, or the last location
 static uint16_t fail_position;
 
-static uint8_t HighScore=13, CurrentScore;
+static uint8_t CurrentScore;
 const uint8_t MOVING_TIMEOUT=60, STATE_PAUSE=128, STATIC_TIMEOUT=250;
+
+uint8_t EEMEM HighScore=0;
 
 // State the state, this will clear additional data for the next state.
 // The counter and data will be zero when each next state starts.
@@ -424,9 +427,9 @@ void FailTurn()
 			SetState(COUNT_DOWN);
 			return;
 		}
-		else if(CurrentScore > HighScore)
+		else if(CurrentScore > eeprom_read_byte(&HighScore))
 		{
-			HighScore=CurrentScore;
+			eeprom_write_byte(&HighScore, CurrentScore);
 			SetState(NEW_HIGH_SCORE);
 		}
 		SetState(CURRENT_SCORE);
@@ -556,8 +559,13 @@ void CountDown()
 
 void DisplayScore(uint8_t score)
 {
-	if(read_switches())
+	if(uint16_t sw=read_switches())
 	{
+		if(sw == (_BV(0) | _BV(4)))
+		{
+			// clear high score
+			eeprom_write_byte(&HighScore, 0);
+		}
 		AdvanceState();
 		return;
 	}
@@ -615,7 +623,7 @@ void DisplayScore(uint8_t score)
 
 void DisplayHighScore()
 {
-	DisplayScore(HighScore);
+	DisplayScore(eeprom_read_byte(&HighScore));
 }
 
 void DisplayCurrentScore()
