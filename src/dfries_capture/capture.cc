@@ -337,83 +337,330 @@ uint8_t lfsr_prand()
 	return prand;
 }
 
-static uint8_t sequence, counter, data;
-void SetSequence(uint8_t num)
+enum GameState
 {
-	sequence=0;
+	START_HERE,
+	HIGH_SCORE,
+	COUNT_DOWN,
+	GAME_START,
+	FAIL_TURN,
+	CURRENT_SCORE,
+	RESTART,
+	NEW_HIGH_SCORE,
+	GO_TO_FIRST,
+};
+static GameState State;
+static uint8_t counter, data;
+// In the game it moves left or right.
+static uint8_t direction, tries;
+// One of the button that should have been pressed, or the last location
+static uint16_t fail_position;
+
+static uint8_t HighScore=13, CurrentScore;
+const uint8_t MOVING_TIMEOUT=60, STATE_PAUSE=128, STATIC_TIMEOUT=250;
+
+// State the state, this will clear additional data for the next state.
+// The counter and data will be zero when each next state starts.
+void SetState(GameState next)
+{
+	State=next;
 	counter=0;
 	data=0;
 }
 
-void SelectTone()
+void AdvanceState()
 {
-	if(!counter)
+	SetState((GameState)(State+1));
+}
+
+void DisplayHighScoreAnim()
+{
+	if(!(data%1))
 	{
-		uint16_t value=read_switches();
-		switch(value)
-		{
-		/*
-		case 1:
-			start_tone((ToneValues)5);
-			++counter;
-			break;
-		case 2:
-			start_tone((ToneValues)6);
-			++counter;
-			break;
-		*/
-		case 4:
-			OCR0A += 20;
-			++counter;
-			break;
-		case 8:
-			OCR0A -= 20;
-			++counter;
-			break;
-		case 0x10:
-			stop_tone();
-			++counter;
-			break;
-		case 0x20:
-			start_tone(TONE_START);
-			++counter;
-			break;
-		case 0x40:
-			start_tone(TONE_CAPTURE);
-			++counter;
-			break;
-		case 0x80:
-			start_tone(TONE_FAIL);
-			++counter;
-			break;
-		case 0x100:
+		write_LEDs(0b1111111111);
+		if(counter==0)
 			start_tone(TONE_GAME_OVER);
-			++counter;
-			break;
-		case 0x200:
-			start_tone(TONE_GAME_OVER_PT2);
-			++counter;
-			break;
-		}
 	}
 	else
 	{
-		if(++counter == 255)
-		{
-			SetSequence(sequence+1);
-		}
+		write_LEDs(0);
+		if(counter==0)
+			stop_tone();
 	}
+	if(++counter==MOVING_TIMEOUT)
+	{
+		counter=0;
+		++data;
+	}
+	if(data==7)
+		SetState(HIGH_SCORE);
+}
+
+void FailTurn()
+{
+	uint16_t led;
+	if(!(data&1))
+	{
+		if(counter==0)
+			start_tone(TONE_FAIL);
+		led=fail_position;
+	}
+	else
+	{
+		led=0;
+		if(counter==0)
+			stop_tone();
+	}
+	write_LEDs(led);
+	if(++counter==STATIC_TIMEOUT)
+	{
+		counter=0;
+		++data;
+	}
+	if(data==6)
+	{
+		if(tries)
+		{
+			SetState(COUNT_DOWN);
+			return;
+		}
+		else if(CurrentScore > HighScore)
+		{
+			HighScore=CurrentScore;
+			SetState(NEW_HIGH_SCORE);
+		}
+		SetState(CURRENT_SCORE);
+	}
+}
+
+void RunGame()
+{
+	uint16_t led;
+	if(data<10)
+	{
+		if(data<5)
+		{
+			// upper row
+			if(direction)
+				led=1<<(4-data);
+			else
+				led=1<<data;
+		}
+		else
+		{
+			// lower row
+			if(direction)
+				led=1<<(14-data);
+			else
+				led=1<<(data);
+		}
+		write_LEDs(led);
+		uint16_t btn=read_switches();
+		if(btn)
+		{
+			uint16_t pos;
+			// check for the wrong button
+			if(direction)
+				pos=_BV(5);
+			else
+				pos=_BV(9);
+			if(btn != pos)
+			{
+				--tries;
+				fail_position=pos;
+				SetState(FAIL_TURN);
+				//printf("fail %d pos %x\n", __LINE__, pos);
+			}
+			else if(led == _BV(7))
+			{
+				CurrentScore+=2;
+				SetState(COUNT_DOWN);
+				if(OCR0A>15)
+					OCR0A-=10;
+				//printf("good %d pos %x\n", __LINE__, led);
+			}
+			else if(led == _BV(6) || led == _BV(8))
+			{
+				++CurrentScore;
+				SetState(COUNT_DOWN);
+				if(OCR0A>15)
+					OCR0A-=10;
+				//printf("good %d pos %x\n", __LINE__, led);
+			}
+			else
+			{
+				--tries;
+				fail_position=led;
+				SetState(FAIL_TURN);
+				//printf("fail %d pos %x\n", __LINE__, led);
+			}
+			return;
+		}
+		if(++counter==MOVING_TIMEOUT)
+		{
+			++data;
+			counter=0;
+		}
+		return;
+	}
+	if(data>=10)
+	{
+		// too late
+		--tries;
+		if(direction)
+			fail_position=_BV(5);
+		else
+			fail_position=_BV(9);
+		//printf("late %d pos %x\n", __LINE__, led);
+		SetState(FAIL_TURN);
+	}
+}
+
+void CountDown()
+{
+	// blinks and plays audio to prepare the user for the game turn
+
+	if(data==0)
+	{
+		direction=lfsr_prand()&1;
+		write_LEDs(0);
+		if(++counter==STATE_PAUSE)
+		{
+			++data;
+			counter=0;
+		}
+		return;
+	}
+
+	// indicate which side it will be coming from
+	if(data & 1)
+	{
+		write_LEDs(direction ? _BV(4) : 1);
+		if(counter==0)
+			start_tone(TONE_START);
+	}
+	else
+	{
+		write_LEDs(0);
+		if(counter==0)
+			stop_tone();
+	}
+
+	if(++counter==STATE_PAUSE)
+	{
+		if(++data==7)
+			AdvanceState();
+		counter=0;
+	}
+}
+
+void DisplayScore(uint8_t score)
+{
+	if(read_switches())
+	{
+		AdvanceState();
+		return;
+	}
+
+	// sweep to 10, pause, display 10's, pause, sweep for 1's, pause,
+	// 1's
+
+	// puase
+	if(data==5 || data == 7 || data == 13)
+	{
+		write_LEDs(0);
+		if(++counter==STATE_PAUSE)
+		{
+			++data;
+			counter=0;
+		}
+		return;
+	}
+	// display 10's then 1's digits
+	if(data == 6 || data == 14)
+	{
+		uint16_t led;
+		uint8_t digit;
+		if(data==6)
+			digit=score/10;
+		else
+			digit=score%10;
+		if(!digit)
+			led=0;
+		else
+			led=1<<(digit-1); // display is 1st based
+		write_LEDs(led);
+		if(++counter==STATIC_TIMEOUT)
+		{
+			// loops sweeping left
+			++data;
+			counter=0;
+		}
+		return;
+	}
+	// sweep from 6 to 10, indicating this will be the 10's digit
+	// then 5 to 1, indicating this will be the 1's digit
+	uint16_t led;
+	if(data < 5)
+		led=1<<(5+data);
+	else
+		led=1<<(12-data);
+	write_LEDs(led);
+	if(++counter==MOVING_TIMEOUT)
+	{
+		++data;
+		counter=0;
+	}
+}
+
+void DisplayHighScore()
+{
+	DisplayScore(HighScore);
+}
+
+void DisplayCurrentScore()
+{
+	DisplayScore(CurrentScore);
 }
 
 void task_dispatch()
 {
-	switch(sequence)
+	switch(State)
 	{
-	case 0:
-		SelectTone();
+	// just a pause
+	case START_HERE:
+		// back to slow speed
+		OCR0A = Timer0_TOP;
+		tries=3;
+		CurrentScore=0;
+		write_LEDs(0);
+		if(++counter > STATIC_TIMEOUT)
+			AdvanceState();
 		break;
-	default:
-		SetSequence(0);
+	case HIGH_SCORE:
+		DisplayHighScore();
+		break;
+	case COUNT_DOWN:
+		CountDown();
+		break;
+	case GAME_START:
+		RunGame();
+		break;
+	case FAIL_TURN:
+		FailTurn();
+		break;
+	case CURRENT_SCORE:
+		DisplayCurrentScore();
+		break;
+	case RESTART:
+		SetState(START_HERE);
+		break;
+	case NEW_HIGH_SCORE:
+		DisplayHighScoreAnim();
+		break;
+	case GO_TO_FIRST:
+		SetState(HIGH_SCORE);
+		break;
 	}
 }
 
@@ -426,8 +673,6 @@ int main()
 
 	// Initialize all MCU hardware.
 	init_devices();
-
-	uint16_t leds=0;
 
 	for(;;)
 	{
@@ -457,12 +702,6 @@ int main()
 			// Run the next appropriate task (if appropriate for
 			// this pass).
 			task_dispatch();
-
-			//leds ^= 1;
-			static int delay;
-			if(!(++delay%200))
-				leds ^= 2;
-			write_LEDs(leds);
 		}
 		/*
 		else
