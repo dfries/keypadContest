@@ -146,30 +146,12 @@ enum ToneValues
 	TONE_GAME_OVER,
 	TONE_GAME_OVER_PT2
 };
-#if 0
-uint16_t PROGMEM notePeriods[TONE_GAME_OVER_PT2+1]={
-       8388,  // E5   659.26    0x9
-       7473,  // F#5  739.99    0xA
-       14106, // G4   392.00    0x1
-       12567, // A4   440.00    0x3
-       15834, // F4   349.23    0x0
-#endif
-const uint16_t PROGMEM notePeriods[]={
-       15834, // F4   349.23    0x0
-    // 14945, // F#4  369.99
-       14106, // G4   392.00    0x1
-       13314, // G#4  415.31    0x2
-       12567, // A4   440.00    0x3
-       11862, // Bb4  466.16    0x4
-       11196, // B4   493.88    0x5
-       10568, // C5   523.25    0x6
-    // 9975,  // C#5  554.37
-       9415,  // D5   587.33    0x7
-       8886,  // Eb5  622.25    0x8
-       8388,  // E5   659.26    0x9
-    // 7917,  // F5   698.46
-       7473,  // F#5  739.99    0xA
+const uint16_t PROGMEM notePeriods[TONE_GAME_OVER_PT2+1]={
        7053,  // G5   783.99    0xB
+       8886,  // Eb5  622.25    0x8
+       12567, // A4   440.00    0x3
+       14106, // G4   392.00    0x1
+       15834, // F4   349.23    0x0
 };
 
 // If non-zero, a tick has elapsed.
@@ -239,14 +221,9 @@ void init_devices()
 void start_tone(ToneValues tone)
 {
 	// set speaker pins to opposite states, they will be toggled from here
-	// This assumes they are already the same value.
-	PORTD ^= _BV(SPKR_PIN_1);
-	/*
 	uint8_t portd=PORTD;
 	PORTD=_BV(SPKR_PIN_1) | (portd & ~_BV(SPKR_PIN_2));
 	portd=PORTD;
-	*/
-	//PORTD ^= _BV(SPKR_PIN_1);
 
 	// Timer1 output compare A for tone period
 	OCR1A = pgm_read_word(&notePeriods[tone]);
@@ -304,17 +281,18 @@ uint16_t read_switches()
 		// Disable bus output for the switches
 		PORTD = portd;
 	}
-	return currentSwitches;
+	return ~currentSwitches;
 }
 
 // Update LED display.  Note that the LEDs are connected between U3/U5 and VCC.
 // Thus, they illuminate when the outputs on U3/U5 go *low*, so 0="LED on" and
-// 1="LED off".
+// 1="LED off" (inverted here to make 1 on).
 // The switches will be read more often than the LEDs will be written, so
 // optimize for switch reading by leaving port B as input with the pullup
 // resistors disabled.
-void write_LEDs(uint16_t off_state)
+void write_LEDs(uint16_t on_state)
 {
+	on_state=~on_state;
 	// Disable interrupts because TIMER1_COMPA_vect also modifies PORTD.
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 	{
@@ -322,7 +300,7 @@ void write_LEDs(uint16_t off_state)
 		DDRB = 0b11111111;
 
 		// Load port B with the lower eight commanded LED states.
-		PORTB = (uint8_t)off_state;
+		PORTB = (uint8_t)on_state;
 
 		// copy PORTD to avoid extra reads and clears
 		uint8_t portd=PORTD;
@@ -337,7 +315,7 @@ void write_LEDs(uint16_t off_state)
 
 		// Load port B with the upper two commanded LED states and
 		// repeat as before.
-		PORTB = off_state >> 8;
+		PORTB = on_state >> 8;
 		PORTD = portd | _BV(LED_B_WRITE_LATCH);
 		PORTD = portd;
 
@@ -374,46 +352,45 @@ void SelectTone()
 		uint16_t value=read_switches();
 		switch(value)
 		{
-		case 0xfffe:
+		/*
+		case 1:
 			start_tone((ToneValues)5);
 			++counter;
 			break;
-		case 0xfffd:
+		case 2:
 			start_tone((ToneValues)6);
 			++counter;
 			break;
-		case 0xfffb:
-			start_tone((ToneValues)7);
-			//OCR0A += 20;
+		*/
+		case 4:
+			OCR0A += 20;
 			++counter;
 			break;
-		case 0xfff7:
-			start_tone((ToneValues)8);
-			//OCR0A -= 20;
+		case 8:
+			OCR0A -= 20;
 			++counter;
 			break;
-		case 0xffef:
-			start_tone((ToneValues)9);
-			//stop_tone();
+		case 0x10:
+			stop_tone();
 			++counter;
 			break;
-		case 0xffdf:
+		case 0x20:
 			start_tone(TONE_START);
 			++counter;
 			break;
-		case 0xffbf:
+		case 0x40:
 			start_tone(TONE_CAPTURE);
 			++counter;
 			break;
-		case 0xff7f:
+		case 0x80:
 			start_tone(TONE_FAIL);
 			++counter;
 			break;
-		case 0xfeff:
+		case 0x100:
 			start_tone(TONE_GAME_OVER);
 			++counter;
 			break;
-		case 0xfdff:
+		case 0x200:
 			start_tone(TONE_GAME_OVER_PT2);
 			++counter;
 			break;
@@ -450,30 +427,7 @@ int main()
 	// Initialize all MCU hardware.
 	init_devices();
 
-	// Use some non-determinism in when the CPU speed changes to generate
-	// a random initial seed value.  Don't use the fastest speed in
-	// case it is a lower voltage environment that doesn't support the
-	// higher rates.  The timer counter clocks need to be running.
-	// The datasheet says it isn't know when it switches CPU clock
-	// speeds, apparently all the clocks and timers are switching
-	// together and it always comes up with the same answer.
-	#if 0
-	for(uint8_t h=0; h<16; ++h)
-	{
-		for(uint8_t i=2; i<8; ++i)
-		{
-			CPU_PRESCALE(i);
-			uint8_t clock = TCNT0 ^ TCNT1L;
-			for(uint8_t j=0; j<clock; ++j)
-			{
-				write_LEDs(lfsr_prand());
-			}
-		}
-	}
-	#endif
-
-	uint16_t leds=lfsr_prand() | lfsr_prand()<<8;
-	write_LEDs(leds);
+	uint16_t leds=0;
 
 	for(;;)
 	{
@@ -535,9 +489,4 @@ ISR(TIMER1_COMPA_vect)
 {
 	// Toggle the speaker pins to make a click.
 	PORTD ^= SPKR_MASK;
-	/*
-	static uint16_t state;
-	write_LEDs(++state);
-	*/
-	write_LEDs(OCR1A);
 }
