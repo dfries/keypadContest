@@ -483,7 +483,7 @@ void timer1_init(void)
 uint8_t lfsr_prand(void)
 {
   // Psuedo-random value.
-  static uint8_t prand;
+  static uint8_t prand=0b01001110;
 
   // Retrieve the seed from EEPROM.
   //prand = eeprom_read_byte(&storedSeed);
