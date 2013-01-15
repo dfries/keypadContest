@@ -25,4 +25,19 @@ hardware buttons and LEDs.
 
 #include <stdint.h>
 
+// not required for emulation
+#define PROGMEM
+
+inline uint16_t pgm_read_word(const uint16_t *addr)
+{
+	return *addr;
+
+}
+
+inline uint8_t pgm_read_byte(const uint8_t *addr)
+{
+	return *addr;
+
+}
+
 #endif // _PGMSPACE_H
