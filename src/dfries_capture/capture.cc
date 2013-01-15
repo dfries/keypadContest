@@ -20,7 +20,14 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
+#include <avr/sleep.h>
 #include <util/atomic.h>
+#ifndef __AVR
+#include <util/delay.h>
+#include <stdio.h>
+#else
+#define printf(msg, ...)
+#endif
 
 #include "../../include/ATtiny2313_clock.h"
 
@@ -164,7 +171,7 @@ void timer0_init()
 	// Enable clock io source with prescaler of 64.
 	TCCR0B = _BV(CS01) | _BV(CS00);
 
-	// Enable the TIMER0 interrupt.
+	// Enable output compare match A interrupt
 	TIMSK = _BV(OCIE0A);
 }
 
@@ -180,8 +187,11 @@ void timer1_init()
 	OCR1A = 20000;
 
 	// Enable clock io source with no prescaler.
+	TCCR1B = _BV(CS10);
+
+	// Enable output enable compare match A interrupt
 	// shared with timer0, bit OR it in.
-	TCCR1B |= _BV(CS10);
+	TIMSK |= _BV(OCIE1A);
 }
 
 // Call this routine to initialize all peripherals
@@ -214,7 +224,11 @@ void start_tone(ToneValues tone)
 {
 	// set speaker pins to opposite states, they will be toggled from here
 	// This assumes they are already the same value.
-	PORTD ^= ~_BV(SPKR_PIN_1);
+	//PORTD ^= _BV(SPKR_PIN_1);
+	uint8_t portd=PORTD;
+	PORTD=_BV(SPKR_PIN_1) | (portd & ~_BV(SPKR_PIN_2));
+	portd=PORTD;
+	//PORTD ^= _BV(SPKR_PIN_1);
 
 	// Timer1 output compare A for tone period
 	OCR1A = eeprom_read_word(notePeriods + tone);
@@ -327,9 +341,78 @@ uint8_t lfsr_prand()
 	return prand;
 }
 
+static uint8_t sequence, counter, data;
+void SetSequence(uint8_t num)
+{
+	sequence=0;
+	counter=0;
+	data=0;
+}
+
+void SelectTone()
+{
+	if(!counter)
+	{
+		uint16_t value=read_switches();
+		switch(value)
+		{
+		case 0xfffb:
+			OCR0A += 20;
+			++counter;
+			break;
+		case 0xfff7:
+			OCR0A -= 20;
+			++counter;
+			break;
+		case 0xffef:
+			stop_tone();
+			++counter;
+			break;
+		case 0xffdf:
+			start_tone(TONE_START);
+			++counter;
+			break;
+		case 0xffbf:
+			start_tone(TONE_CAPTURE);
+			++counter;
+			break;
+		case 0xff7f:
+			start_tone(TONE_FAIL);
+			++counter;
+			break;
+		case 0xfeff:
+			start_tone(TONE_GAME_OVER);
+			++counter;
+			break;
+		case 0xfdff:
+			start_tone(TONE_GAME_OVER_PT2);
+			++counter;
+			break;
+		}
+	}
+	else
+	{
+		if(++counter == 255)
+		{
+			SetSequence(sequence+1);
+		}
+	}
+}
+
+void task_dispatch()
+{
+	switch(sequence)
+	{
+	case 0:
+		SelectTone();
+		break;
+	default:
+		SetSequence(0);
+	}
+}
+
 int main()
 {
-
 	// Initialize all MCU hardware.
 	init_devices();
 
@@ -350,7 +433,50 @@ int main()
 	// It expands to 6 bytes of program text (ATtiny2313).
 	CPU_PRESCALE(inline_cpu_hz_to_prescale(F_CPU));
 
-	write_LEDs(lfsr_prand() | lfsr_prand()<<8);
+	uint16_t leds=lfsr_prand() | lfsr_prand()<<8;
+	write_LEDs(leds);
+
+	for(;;)
+	{
+		#ifndef __AVR
+		// Be a little nicer when not on the avr hardware since the
+		// speaker interrupt really is on another thread, this thread
+		// doesn't need to wake up every time the interrupt goes off.
+		_delay_us(1000);
+		#endif
+		// sleep while waiting for an interrupt
+		// see avr/sleep.h by disabling the interrupt the check is
+		// atomic
+		set_sleep_mode(SLEEP_MODE_IDLE);
+		cli();
+
+		// If another time slice has elapsed
+		if(tickFlag)
+		{
+			sei();
+
+			// Reset this flag so this code isn't run again until
+			// another slice has elapsed.
+			tickFlag = 0;
+
+			// Run the next appropriate task (if appropriate for
+			// this pass).
+			task_dispatch();
+
+			//leds ^= 1;
+			static int delay;
+			if(!(++delay%200))
+				leds ^= 2;
+			write_LEDs(leds);
+		}
+		else
+		{
+			sleep_enable();
+			sei();
+			sleep_cpu();
+			sleep_disable();
+		}
+	}
 
 	return -1;
 }
