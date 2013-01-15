@@ -69,7 +69,7 @@ void Timer0::UpdateSleep()
 		FastPWM_OCR_WGM=7
 	};
 
-	if(mode != CTC_WGM)
+	if(mode && mode != CTC_WGM)
 		printf("Timer0::Set timer mode %u not implemented, using CTC\n",
 			mode);
 
@@ -89,6 +89,9 @@ void Timer0::UpdateSleep()
 	double duration = SecPerTick(REG_TCCR0B);
 	// ignoring B for now and only using CTC register A
 	uint8_t top=Reg[REG_OCR0A];
+	// mode 0 is normal mode, maximum range
+	if(mode == 0)
+		top = 0xff;
 	// seconds per repitition
 	duration *= top;
 
