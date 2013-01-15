@@ -27,7 +27,7 @@ hardware buttons and LEDs.
 using namespace std;
 
 HallKeypad::HallKeypad() :
-	Buttons(0),
+	Buttons(0xffff),
 	LEDs(0),
 	PortD(0),
 	PortB(0)
