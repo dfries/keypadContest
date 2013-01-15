@@ -26,6 +26,12 @@ hardware buttons and LEDs.
 
 ATtiny g_ATtiny;
 
+ATtiny::ATtiny() :
+	ThreadsRunning(0),
+	MainThread(NULL)
+{
+}
+
 void ATtiny::SetThreadAffinity()
 {
 	// Schedule this thread only on the first CPU, any will work, but
@@ -35,4 +41,64 @@ void ATtiny::SetThreadAffinity()
 	CPU_SET(0, &mask);
 	// 0 is the caller's thread id
 	sched_setaffinity(0, sizeof(mask), &mask);
+}
+
+void ATtiny::MainStart()
+{
+	QMutexLocker locker(&Mutex);
+	// The main thread can run if no other thread is running or if
+	// interrupts are enabled.  As opposed to interrupt threads it can
+	// still run even when interrupts are disabled.
+	while(ThreadsRunning && !locked_IrqEnabled())
+		Cond.wait(&Mutex);
+
+	++ThreadsRunning;
+}
+
+void ATtiny::MainStop()
+{
+	QMutexLocker locker(&Mutex);
+	--ThreadsRunning;
+	Cond.wakeAll();
+}
+
+void ATtiny::IntStart()
+{
+	QMutexLocker locker(&Mutex);
+	// An interrupt thread can run if interrupts are enabled, but it
+	// does disable interrupts to prevent any new threads from running.
+	while(!locked_IrqEnabled())
+		Cond.wait(&Mutex);
+
+	// Would not get here unless interrupts were disabled, therefore
+	// they can be disabled.
+	locked_EnableInterrupts(false);
+	++ThreadsRunning;
+}
+
+void ATtiny::IntStop()
+{
+	QMutexLocker locker(&Mutex);
+	// Interrupts might be enabled or disabled, but the irq handler
+	// wouldn't be running unless they started out enabled, so I assume
+	// you always leave interrupts enabled, but I don't know for sure
+	// if there is a way on the hardware that they would remain disabled.
+	locked_EnableInterrupts(true);
+	--ThreadsRunning;
+	Cond.wakeAll();
+}
+
+void ATtiny::locked_EnableInterrupts(bool enable)
+{
+	uint8_t sreg=Chip.GetValue(REG_SREG);
+	if(enable)
+	{
+		sreg |= _BV(SREG_I);
+		Cond.wakeAll();
+	}
+	else
+	{
+		sreg &= ~_BV(SREG_I);
+	}
+	Chip=RegValue(REG_SREG, sreg);
 }

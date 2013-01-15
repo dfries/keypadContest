@@ -21,6 +21,7 @@ hardware buttons and LEDs.
 */
 
 #include <util/delay.h>
+#include "ATtiny.h"
 #include <sys/time.h>
 #include <sched.h>
 #include <time.h>
@@ -54,9 +55,23 @@ void _delay_ms(double ms)
 		return;
 	}
 	#endif
+	int is_main=g_ATtiny.IsMain();
+	if(is_main)
+		g_ATtiny.MainStop();
+	/* Interrupts are already concurrent (other interrupts are allowed
+	 * to run) or not, so they don't need the inverse stop/start.
+	else
+		g_ATtiny.IntStop();
+		*/
 	struct timespec req={(long int)(ms/1000)};
 	req.tv_nsec=(ms - req.tv_sec*1000)*1000000;
 	nanosleep(&req, NULL);
+	if(is_main)
+		g_ATtiny.MainStart();
+	/*
+	else
+		g_ATtiny.IntStart();
+	*/
 }
 
 void _delay_us(double us)
@@ -66,10 +81,10 @@ void _delay_us(double us)
 
 void sei()
 {
-	printf("%s TODO\n", __func__);
+	g_ATtiny.EnableInterrupts(true);
 }
 
 void cli()
 {
-	printf("%s TODO\n", __func__);
+	g_ATtiny.EnableInterrupts(false);
 }

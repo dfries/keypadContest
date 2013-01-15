@@ -22,6 +22,7 @@ hardware buttons and LEDs.
 
 #include "Timer.h"
 #include <QMutexLocker>
+#include "ATtiny.h"
 #include <dlfcn.h>
 
 Timer::Timer(const uint8_t *reg, const char *capt, const char *comp_a,
@@ -98,7 +99,9 @@ void Timer::run()
 				if(seq.func)
 				{
 					Reg[REG_TIFR]&=~seq.IrqFlag;
+					g_ATtiny.IntStart();
 					seq.func();
+					g_ATtiny.IntStop();
 				}
 			}
 		}

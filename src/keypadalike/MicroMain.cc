@@ -29,5 +29,9 @@ int avr_main();
 int MicroMain::Run()
 {
 	ATtiny::SetThreadAffinity();
-	return avr_main();
+	g_ATtiny.RegisterMainThread();
+	g_ATtiny.MainStart();
+	int ret = avr_main();
+	g_ATtiny.MainStop();
+	return ret;
 }

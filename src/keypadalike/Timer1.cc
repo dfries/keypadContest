@@ -124,7 +124,7 @@ void Timer1::UpdateSleep()
 	// seconds per repitition
 	duration *= top;
 	duration /= 2;
-	printf("duration %8.6f\n", duration);
+	//printf("duration %8.6f\n", duration);
 
 	Seq sleep_array[sizeof(SleepSequence)/sizeof(*SleepSequence)]={{{0}}};
 	Seq &seq=sleep_array[0];

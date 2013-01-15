@@ -116,6 +116,25 @@ public:
 private:
 	RegEnum Reg;
 };
+
+/* SREG holds the interrupt enable, which means it has to deal with
+ * concurrency, but that can't be handled in ATtinyChip, it must be done
+ * in ATtiny, so it is treated specially.
+ */
+class RegObj_SREG
+{
+public:
+	RegObj_SREG() : Reg(REG_SREG) {}
+	RegObj_SREG& operator=(uint8_t value);
+	RegObj_SREG& operator|=(uint8_t value);
+	RegObj_SREG& operator&=(uint8_t value);
+	RegObj_SREG& operator^=(uint8_t value);
+	// allow reading back as an integer
+	operator uint8_t();
+private:
+	RegEnum Reg;
+};
+
 class RegObj16
 {
 public:
@@ -172,6 +191,6 @@ extern RegObj16 ICR1;
 extern RegObj ICR1L;
 extern RegObj ICR1H;
 
-extern RegObj SREG;
+extern RegObj_SREG SREG;
 
 #endif // _AVR_IO_H_

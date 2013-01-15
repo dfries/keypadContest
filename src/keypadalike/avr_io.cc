@@ -65,7 +65,7 @@ RegObj16 ICR1(REG_ICR1);
 RegObj ICR1L(REG_ICR1L);
 RegObj ICR1H(REG_ICR1H);
 
-RegObj SREG(REG_SREG);
+RegObj_SREG SREG;
 
 RegObj& RegObj::operator=(uint8_t value)
 {
@@ -92,6 +92,52 @@ RegObj& RegObj::operator^=(uint8_t value)
 }
 
 RegObj::operator uint8_t()
+{
+	return g_ATtiny.GetValue(Reg);
+}
+
+// enable or disable the interrupts when the value changes
+RegObj_SREG& RegObj_SREG::operator=(uint8_t value)
+{
+	uint8_t before=g_ATtiny.GetValue(Reg);
+	g_ATtiny=RegValue(Reg, value);
+	uint8_t after=g_ATtiny.GetValue(Reg);
+	if((before ^ after) & _BV(SREG_I))
+		g_ATtiny.EnableInterrupts(after & _BV(SREG_I));
+	return *this;
+}
+
+RegObj_SREG& RegObj_SREG::operator|=(uint8_t value)
+{
+	uint8_t before=g_ATtiny.GetValue(Reg);
+	g_ATtiny|=RegValue(Reg, value);
+	uint8_t after=g_ATtiny.GetValue(Reg);
+	if((before ^ after) & _BV(SREG_I))
+		g_ATtiny.EnableInterrupts(after & _BV(SREG_I));
+	return *this;
+}
+
+RegObj_SREG& RegObj_SREG::operator&=(uint8_t value)
+{
+	uint8_t before=g_ATtiny.GetValue(Reg);
+	g_ATtiny&=RegValue(Reg, value);
+	uint8_t after=g_ATtiny.GetValue(Reg);
+	if((before ^ after) & _BV(SREG_I))
+		g_ATtiny.EnableInterrupts(after & _BV(SREG_I));
+	return *this;
+}
+
+RegObj_SREG& RegObj_SREG::operator^=(uint8_t value)
+{
+	uint8_t before=g_ATtiny.GetValue(Reg);
+	g_ATtiny^=RegValue(Reg, value);
+	uint8_t after=g_ATtiny.GetValue(Reg);
+	if((before ^ after) & _BV(SREG_I))
+		g_ATtiny.EnableInterrupts(after & _BV(SREG_I));
+	return *this;
+}
+
+RegObj_SREG::operator uint8_t()
 {
 	return g_ATtiny.GetValue(Reg);
 }

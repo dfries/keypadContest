@@ -24,7 +24,9 @@ hardware buttons and LEDs.
 #define _AT_TINY_H
 
 #include <QMutex>
+#include <QWaitCondition>
 #include <QMutexLocker>
+#include <QThread>
 #include "avr/io.h"
 #include "ATtinyChip.h"
 
@@ -36,6 +38,8 @@ class HallKeypad;
 class ATtiny
 {
 public:
+	ATtiny();
+
 	void SetPeripheral(HallKeypad *keypad)
 	{
 		QMutexLocker locker(&Mutex);
@@ -53,6 +57,38 @@ public:
 	 * probably has problems anyway.
 	 */
 	static void SetThreadAffinity();
+
+	/* Call once to store which thread is the main thread.
+	 * This is used to find out when the behavior is different
+	 * between the main thread and interrupts.
+	 */
+	void RegisterMainThread() { MainThread=QThread::currentThread(); }
+	bool IsMain() { return MainThread==QThread::currentThread(); }
+
+	/* These functions exist to do the thread synchronization required
+	 * to emulate a main program and interrupt handlers.  That means
+	 * when interrupts are disabled only the main thread or an
+	 * interrupt thread may run while the other are blocked, that is
+	 * also how atomic operations are implemented on the chip, if the
+	 * interrupts (or main thread when in an interrupt), can't run
+	 * it looks like it is atomic.  See SetThreadAffinity for how only
+	 * one thread is executing at a time, they will be allowed to
+	 * task switch, which isn't how the hardware works.
+	 *
+	 * Interrupt handlers are executed with global interrupts initially
+	 * disabled, until they are enabled only one interrupt handler can
+	 * run at a time.  That is covered by checking if interrupts are
+	 * enabled when start is called.
+	 */
+	void MainStart();
+	void MainStop();
+	void IntStart();
+	void IntStop();
+	void EnableInterrupts(bool enable)
+	{
+		QMutexLocker locker(&Mutex);
+		locked_EnableInterrupts(enable);
+	}
 
 	// It is using the operator syntax just to make it obvious what
 	// operation they represent.
@@ -88,6 +124,19 @@ public:
 private:
 	ATtinyChip Chip;
 	QMutex Mutex;
+	QWaitCondition Cond;
+	int ThreadsRunning;
+	QThread *MainThread;
+
+	// Mutex must be held
+	// returns true if interrupts are enabled
+	bool locked_IrqEnabled()
+	{
+		return Chip.GetValue(REG_SREG) & _BV(SREG_I);
+	}
+	// Mutex must be held
+	// interrupts are enabled if enable is true
+	void locked_EnableInterrupts(bool enable);
 };
 
 extern ATtiny g_ATtiny;

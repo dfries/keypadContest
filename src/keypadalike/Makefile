@@ -15,8 +15,8 @@ LD_LIBS=$(QT_LIBS) -ldl -lavr_target
 
 #AVR_SRC=../keypadContest/src/cpu_clock/cpu_clock.cc
 #AVR_SRC=../keypadContest/src/input/input.cc
-#AVR_SRC=../keypadContest/src/nato_demo/hrt_example.cc
-AVR_SRC=../keypadContest/src/dfries_capture/capture.cc
+AVR_SRC=../keypadContest/src/nato_demo/hrt_example.cc
+#AVR_SRC=../keypadContest/src/dfries_capture/capture.cc
 
 all: libavr_target.so keypadalike
 

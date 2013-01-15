@@ -149,6 +149,7 @@ const ATtinyChip& ATtinyChip::Set(RegEnum reg, RegOperation op)
 	case REG_DDRD:
 	case REG_DDRB:
 	case REG_DDRA:
+	case REG_SREG: // interrupt concurrency is handled in ATtiny
 		break;
 	default:
 		printf("unhandled register 0x%2x\n", reg);
