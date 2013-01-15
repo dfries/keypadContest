@@ -180,14 +180,13 @@ void timer0_init()
 void timer1_init()
 {
 	// enable CTC mode
-	TCCR1B = _BV(WGM12);
+	// Enable clock io source with no prescaler.
+	TCCR1B = _BV(WGM12) | _BV(CS10);
 
 	// The timer is left running, give it a reasonable period, just so it
 	// isn't going off all the time.
 	OCR1A = 20000;
 
-	// Enable clock io source with no prescaler.
-	TCCR1B = _BV(CS10);
 
 	// Enable output enable compare match A interrupt
 	// shared with timer0, bit OR it in.
