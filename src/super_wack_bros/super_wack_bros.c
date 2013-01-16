@@ -1,4 +1,5 @@
 // Super Wack Bros.
+//  https://github.com/oelgern/keypadContest
 //
 // This code demonstrates a super-wack whack-a-mole game for two players
 //  head-to-head action on a Hall Research Technologies KP-2B keypad fitted with
