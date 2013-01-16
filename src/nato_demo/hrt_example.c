@@ -365,6 +365,12 @@ void init_devices(void)
   //  default is for the song to not be playing.
   lightStates = (lfsr_prand() << 2) | 0x1;
 
+  // Initialize the 8-bit timer used for the multi-tasking tick.
+  timer0_init();
+
+  // Initialize the 16-bit timer used for the music.
+  timer1_init();
+
   sei(); // Enable interrupts.
   // All peripherals are now initialized.
 }
