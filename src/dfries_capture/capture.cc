@@ -358,7 +358,8 @@ static uint8_t direction, tries;
 static uint16_t fail_position;
 
 static uint8_t CurrentScore;
-const uint8_t MOVING_TIMEOUT=60, STATE_PAUSE=128, STATIC_TIMEOUT=250;
+const uint8_t FAST_MOVING=20, MOVING_TIMEOUT=60, STATE_PAUSE=128,
+	STATIC_TIMEOUT=254;
 
 uint8_t EEMEM HighScore=0;
 
@@ -369,6 +370,23 @@ void SetState(GameState next)
 	State=next;
 	counter=0;
 	data=0;
+
+	// List all the states that set the clock rate back to default
+	// basically anything not in a game mode, which is important in
+	// starting a new game or displaying the current score without
+	// going by too fast to read.
+	switch(State)
+	{
+	case START_HERE:
+	case HIGH_SCORE:
+	case CURRENT_SCORE:
+	case RESTART:
+	case NEW_HIGH_SCORE:
+		// back to slow speed
+		OCR0A = Timer0_TOP;
+	default:
+		;
+	}
 }
 
 void AdvanceState()
@@ -614,7 +632,7 @@ void DisplayScore(uint8_t score)
 	else
 		led=1<<(12-data);
 	write_LEDs(led);
-	if(++counter==MOVING_TIMEOUT)
+	if(++counter==FAST_MOVING)
 	{
 		++data;
 		counter=0;
@@ -637,8 +655,6 @@ void task_dispatch()
 	{
 	// just a pause
 	case START_HERE:
-		// back to slow speed
-		OCR0A = Timer0_TOP;
 		tries=3;
 		CurrentScore=0;
 		write_LEDs(0);
