@@ -396,7 +396,7 @@ void AdvanceState()
 
 void DisplayHighScoreAnim()
 {
-	if(!(data%1))
+	if(!(data&1))
 	{
 		write_LEDs(0b1111111111);
 		if(counter==0)
@@ -413,7 +413,7 @@ void DisplayHighScoreAnim()
 		counter=0;
 		++data;
 	}
-	if(data==7)
+	if(data==8)
 		SetState(HIGH_SCORE);
 }
 
@@ -443,14 +443,16 @@ void FailTurn()
 		if(tries)
 		{
 			SetState(COUNT_DOWN);
-			return;
 		}
 		else if(CurrentScore > eeprom_read_byte(&HighScore))
 		{
 			eeprom_write_byte(&HighScore, CurrentScore);
 			SetState(NEW_HIGH_SCORE);
 		}
-		SetState(CURRENT_SCORE);
+		else
+		{
+			SetState(CURRENT_SCORE);
+		}
 	}
 }
 
