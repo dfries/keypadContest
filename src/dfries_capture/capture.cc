@@ -341,11 +341,11 @@ uint8_t lfsr_prand()
 enum GameState
 {
 	START_HERE,
-	HIGH_SCORE,
 	COUNT_DOWN,
-	GAME_START,
+	GAME_LOOP,
 	FAIL_TURN,
 	CURRENT_SCORE,
+	HIGH_SCORE,
 	RESTART,
 	NEW_HIGH_SCORE,
 	GO_TO_FIRST,
@@ -577,7 +577,7 @@ void CountDown()
 	}
 }
 
-void DisplayScore(uint8_t score)
+void DisplayScore(uint8_t score, bool wait)
 {
 	if(uint16_t sw=read_switches())
 	{
@@ -616,12 +616,19 @@ void DisplayScore(uint8_t score)
 		if(!digit)
 			led=0;
 		else
-			led=1<<(digit-1); // display is 1st based
+			led=1<<(digit-1); // display is ones based
 		write_LEDs(led);
 		if(++counter==STATIC_TIMEOUT)
 		{
-			// loops sweeping left
 			++data;
+			// restart to the start until someone presses a button
+			if(data==15)
+			{
+				// less this is a one shot score display
+				if(!wait)
+					AdvanceState();
+				data=0;
+			}
 			counter=0;
 		}
 		return;
@@ -643,33 +650,34 @@ void DisplayScore(uint8_t score)
 
 void DisplayHighScore()
 {
-	DisplayScore(eeprom_read_byte(&HighScore));
+	DisplayScore(eeprom_read_byte(&HighScore), true);
 }
 
 void DisplayCurrentScore()
 {
-	DisplayScore(CurrentScore);
+	DisplayScore(CurrentScore, false);
 }
 
 void task_dispatch()
 {
+	static uint8_t last_state=-1;
+	if(last_state != State)
+	{
+		printf("State %d\n", State);
+		last_state = State;
+	}
 	switch(State)
 	{
 	// just a pause
 	case START_HERE:
-		tries=3;
-		CurrentScore=0;
 		write_LEDs(0);
 		if(++counter > STATIC_TIMEOUT)
-			AdvanceState();
-		break;
-	case HIGH_SCORE:
-		DisplayHighScore();
+			SetState(HIGH_SCORE);
 		break;
 	case COUNT_DOWN:
 		CountDown();
 		break;
-	case GAME_START:
+	case GAME_LOOP:
 		RunGame();
 		break;
 	case FAIL_TURN:
@@ -678,12 +686,18 @@ void task_dispatch()
 	case CURRENT_SCORE:
 		DisplayCurrentScore();
 		break;
+	case HIGH_SCORE:
+		DisplayHighScore();
+		break;
 	case RESTART:
-		SetState(START_HERE);
+		tries=3;
+		CurrentScore=0;
+		SetState(COUNT_DOWN);
 		break;
 	case NEW_HIGH_SCORE:
 		DisplayHighScoreAnim();
 		break;
+	default:
 	case GO_TO_FIRST:
 		SetState(HIGH_SCORE);
 		break;
