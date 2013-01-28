@@ -22,6 +22,7 @@ hardware buttons and LEDs.
 
 #include "Timer1.h"
 #include "util.h"
+#include <math.h>
 
 Timer1::Timer1(const uint8_t *reg) :
 	Timer(reg, "TIMER1_CAPT_vect", "TIMER1_COMPA_vect", "TIMER1_COMPB_vect",
@@ -160,5 +161,9 @@ uint8_t Timer1::Get(RegEnum reg)
 	// This is really only valid if the timer is running and it is
 	// less than or equal to the current TOP.  It can be greater than
 	// top if the sleep is late.
-	return (uint8_t)((now - Start) * SecPerTick(REG_TCCR1B));
+	uint16_t ocr1a=Reg[REG_OCR1AL] | Reg[REG_OCR1AH]<<8;
+	uint16_t counter=(uint16_t)fmod((now - Start) / SecPerTick(REG_TCCR1B),
+		ocr1a);
+	Reg[REG_TCNT1H]=counter>>8;
+	return (uint8_t)counter;
 }
