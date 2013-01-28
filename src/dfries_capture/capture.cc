@@ -326,8 +326,9 @@ void write_LEDs(uint16_t on_state)
 	}
 }
 
-// The store for the pseudo-random number generator.
-static uint8_t prand = 0b01001110;
+// The store for the pseudo-random number generator.  It will return zero
+// until seeded by setting prand to a different value.
+static uint8_t prand = 0;
 // Returns a pseudo-random value between 1 and 255 by using a period-maximal
 //  8-bit LFSR
 uint8_t lfsr_prand()
@@ -583,6 +584,41 @@ void DisplayScore(uint8_t score, bool high_score)
 {
 	if(uint16_t sw=read_switches())
 	{
+		// Seed the random number generator based on the timer counter
+		// value since start.  The timing is from an external source
+		// and will provide a difference sequence each time, but this
+		// doesn't use the timer directly, it uses it to select a
+		// seed that has the same number of one's as zero's.
+		if(!prand)
+		{
+			switch(TCNT0 & 7)
+			{
+			case 0:
+				prand=0b01001110;
+				break;
+			case 1:
+				prand=0b10110001;
+				break;
+			case 2:
+				prand=0b01000111;
+				break;
+			case 3:
+				prand=0b11000101;
+				break;
+			case 4:
+				prand=0b10011001;
+				break;
+			case 5:
+				prand=0b01101001;
+				break;
+			case 6:
+				prand=0b01101010;
+				break;
+			case 7:
+				prand=0b11000011;
+				break;
+			}
+		}
 		if(sw == (_BV(0) | _BV(4)))
 		{
 			// clear high score
