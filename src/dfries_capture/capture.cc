@@ -62,6 +62,8 @@
 // The game speed will be increased by decreasing timer0 period, start at
 // 2ms by couting to 250.
 const uint8_t Timer0_TOP=250;
+// Used to make the tone go up each time the timer goes off
+uint8_t CaptureTone=0;
 
 // The half-period in F_CPU cycles of each tone.  Used with melody[].  Comment/
 //  uncomment as needed.  If lower frequencies are needed, the prescaler will
@@ -344,6 +346,7 @@ enum GameState
 	START_HERE,
 	COUNT_DOWN,
 	GAME_LOOP,
+	CAPTURED,
 	FAIL_TURN,
 	CURRENT_SCORE1,
 	CURRENT_SCORE2,
@@ -459,6 +462,21 @@ void FailTurn()
 	}
 }
 
+void Captured()
+{
+	if(counter==0)
+	{
+		start_tone(TONE_CAPTURE);
+		CaptureTone=1;
+	}
+	if(++counter==STATE_PAUSE)
+	{
+		CaptureTone=0;
+		stop_tone();
+		SetState(COUNT_DOWN);
+	}
+}
+
 void RunGame()
 {
 	uint16_t led;
@@ -500,7 +518,7 @@ void RunGame()
 			else if(led == _BV(7))
 			{
 				CurrentScore+=2;
-				SetState(COUNT_DOWN);
+				SetState(CAPTURED);
 				if(OCR0A>15)
 					OCR0A-=10;
 				//printf("good %d pos %x\n", __LINE__, led);
@@ -508,7 +526,7 @@ void RunGame()
 			else if(led == _BV(6) || led == _BV(8))
 			{
 				++CurrentScore;
-				SetState(COUNT_DOWN);
+				SetState(CAPTURED);
 				if(OCR0A>15)
 					OCR0A-=10;
 				//printf("good %d pos %x\n", __LINE__, led);
@@ -756,12 +774,6 @@ void DisplayCurrentScore()
 
 void task_dispatch()
 {
-	static uint8_t last_state=-1;
-	if(last_state != State)
-	{
-		printf("State %d\n", State);
-		last_state = State;
-	}
 	switch(State)
 	{
 	// just a pause
@@ -774,6 +786,9 @@ void task_dispatch()
 		break;
 	case GAME_LOOP:
 		RunGame();
+		break;
+	case CAPTURED:
+		Captured();
 		break;
 	case FAIL_TURN:
 		FailTurn();
@@ -858,6 +873,7 @@ int main()
 // Called when Timer0 counter matches OCR0A
 ISR(TIMER0_COMPA_vect)
 {
+	// runs the main loop through once
 	tickFlag = 1;
 }
 
@@ -866,4 +882,8 @@ ISR(TIMER1_COMPA_vect)
 {
 	// Toggle the speaker pins to make a click.
 	PORTD ^= SPKR_MASK;
+
+	// increase the pitch at each tick
+	if(CaptureTone && OCR1A > 100)
+		--OCR1A;
 }
