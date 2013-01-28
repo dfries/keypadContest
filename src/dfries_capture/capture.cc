@@ -344,7 +344,9 @@ enum GameState
 	COUNT_DOWN,
 	GAME_LOOP,
 	FAIL_TURN,
-	CURRENT_SCORE,
+	CURRENT_SCORE1,
+	CURRENT_SCORE2,
+	CURRENT_SCORE3,
 	HIGH_SCORE,
 	RESTART,
 	NEW_HIGH_SCORE,
@@ -379,7 +381,7 @@ void SetState(GameState next)
 	{
 	case START_HERE:
 	case HIGH_SCORE:
-	case CURRENT_SCORE:
+	case CURRENT_SCORE1:
 	case RESTART:
 	case NEW_HIGH_SCORE:
 		// back to slow speed
@@ -394,7 +396,7 @@ void AdvanceState()
 	SetState((GameState)(State+1));
 }
 
-void DisplayHighScoreAnim()
+void DisplayNewHighScoreAnim()
 {
 	if(!(data&1))
 	{
@@ -451,7 +453,7 @@ void FailTurn()
 		}
 		else
 		{
-			SetState(CURRENT_SCORE);
+			SetState(CURRENT_SCORE1);
 		}
 	}
 }
@@ -577,7 +579,7 @@ void CountDown()
 	}
 }
 
-void DisplayScore(uint8_t score, bool wait)
+void DisplayScore(uint8_t score, bool high_score)
 {
 	if(uint16_t sw=read_switches())
 	{
@@ -590,11 +592,69 @@ void DisplayScore(uint8_t score, bool wait)
 		return;
 	}
 
+	// high score is a double sweep right, current is left
+	if(data<10)
+	{
+		uint16_t led=0;
+		if(high_score)
+		{
+			switch(data)
+			{
+			case 0:
+				led=0b0000100001;
+				break;
+			case 1:
+				led=0b0001000010;
+				break;
+			case 2:
+				led=0b0010000100;
+				break;
+			case 3:
+				led=0b0100001000;
+				break;
+			case 4:
+				led=0b1000010000;
+				break;
+			}
+		}
+		else
+		{
+			switch(data)
+			{
+			case 0:
+				led=0b1000010000;
+				break;
+			case 1:
+				led=0b0100001000;
+				break;
+			case 2:
+				led=0b0010000100;
+				break;
+			case 3:
+				led=0b0001000010;
+				break;
+			case 4:
+				led=0b0000100001;
+				break;
+			}
+		}
+		write_LEDs(led);
+		++counter;
+		// fast for the sweep, then more of a pause
+		if((data<=4 && counter==FAST_MOVING) || counter==MOVING_TIMEOUT)
+		{
+			++data;
+			counter=0;
+
+		}
+		return;
+	}
+
 	// sweep to 10, pause, display 10's, pause, sweep for 1's, pause,
 	// 1's
 
 	// puase
-	if(data==5 || data == 7 || data == 13)
+	if(data==15 || data == 17 || data == 23)
 	{
 		write_LEDs(0);
 		if(++counter==STATE_PAUSE)
@@ -605,11 +665,11 @@ void DisplayScore(uint8_t score, bool wait)
 		return;
 	}
 	// display 10's then 1's digits
-	if(data == 6 || data == 14)
+	if(data == 16 || data == 24)
 	{
 		uint16_t led;
 		uint8_t digit;
-		if(data==6)
+		if(data==16)
 			digit=score/10;
 		else
 			digit=score%10;
@@ -622,10 +682,10 @@ void DisplayScore(uint8_t score, bool wait)
 		{
 			++data;
 			// restart to the start until someone presses a button
-			if(data==15)
+			if(data==25)
 			{
 				// less this is a one shot score display
-				if(!wait)
+				if(!high_score)
 					AdvanceState();
 				data=0;
 			}
@@ -636,10 +696,10 @@ void DisplayScore(uint8_t score, bool wait)
 	// sweep from 6 to 10, indicating this will be the 10's digit
 	// then 5 to 1, indicating this will be the 1's digit
 	uint16_t led;
-	if(data < 5)
-		led=1<<(5+data);
+	if(data < 15)
+		led=1<<(5+data-10);
 	else
-		led=1<<(12-data);
+		led=1<<(12-(data-10));
 	write_LEDs(led);
 	if(++counter==FAST_MOVING)
 	{
@@ -670,7 +730,6 @@ void task_dispatch()
 	{
 	// just a pause
 	case START_HERE:
-		write_LEDs(0);
 		if(++counter > STATIC_TIMEOUT)
 			SetState(HIGH_SCORE);
 		break;
@@ -683,7 +742,10 @@ void task_dispatch()
 	case FAIL_TURN:
 		FailTurn();
 		break;
-	case CURRENT_SCORE:
+	// repeat three times
+	case CURRENT_SCORE1:
+	case CURRENT_SCORE2:
+	case CURRENT_SCORE3:
 		DisplayCurrentScore();
 		break;
 	case HIGH_SCORE:
@@ -695,7 +757,7 @@ void task_dispatch()
 		SetState(COUNT_DOWN);
 		break;
 	case NEW_HIGH_SCORE:
-		DisplayHighScoreAnim();
+		DisplayNewHighScoreAnim();
 		break;
 	default:
 	case GO_TO_FIRST:
