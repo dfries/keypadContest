@@ -723,14 +723,27 @@ void DisplayScore(uint8_t score, bool high_score)
 	{
 		uint16_t led;
 		uint8_t digit;
+		uint8_t hundreds=0;
 		if(data==16)
+		{
 			digit=score/10;
+			hundreds=digit/10;
+			digit%=10;
+		}
 		else
+		{
 			digit=score%10;
+		}
 		if(!digit)
+		{
 			led=0;
+		}
 		else
+		{
 			led=1<<(digit-1); // display is ones based
+			// use the 10 led for hundreds
+			led|=hundreds<<9;
+		}
 		write_LEDs(led);
 		if(++counter==STATIC_TIMEOUT)
 		{
