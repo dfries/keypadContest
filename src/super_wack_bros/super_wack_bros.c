@@ -639,7 +639,9 @@ void init_devices(void)
   // Disable the watchdog timer.  It is only used at the conclusion of the game
   //  to reset the MCU for another game.
   // Reset the watchdog timer.
+#ifdef __AVR
   asm volatile("wdr");
+#endif
 
   // Clear WDRF in MCUSR.
   MCUSR &= ~(1<<WDRF);
@@ -651,7 +653,7 @@ void init_devices(void)
   WDTCSR = 0x00;
 
   // Clear the divide-by-eight clock bit so MCU runs at full speed.
-  clock_prescale_set(0);
+  clock_prescale_set(clock_div_1);
 
   // Configure port B as all inputs.
   //DDRB = 0; // Register initialized to zero, so this isn't needed.
