@@ -63,7 +63,7 @@
 // 2ms by couting to 250.
 const uint8_t Timer0_TOP=250;
 // Used to make the tone go up each time the timer goes off
-uint8_t CaptureTone=0;
+static uint8_t CaptureTone=0;
 
 // The half-period in F_CPU cycles of each tone.  Used with melody[].  Comment/
 //  uncomment as needed.  If lower frequencies are needed, the prescaler will
@@ -151,7 +151,7 @@ enum ToneValues
 };
 const uint16_t PROGMEM notePeriods[TONE_GAME_OVER_PT2+1]={
        7053,  // G5   783.99    0xB
-       8886,  // Eb5  622.25    0x8
+       6284,  // Eb5  622.25    0x8
        12567, // A4   440.00    0x3
        14106, // G4   392.00    0x1
        15834, // F4   349.23    0x0
@@ -897,6 +897,6 @@ ISR(TIMER1_COMPA_vect)
 	PORTD ^= SPKR_MASK;
 
 	// increase the pitch at each tick
-	if(CaptureTone && OCR1A > 100)
+	if(CaptureTone && OCR1A > 50)
 		--OCR1A;
 }
