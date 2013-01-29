@@ -1,0 +1,28 @@
+Game Play for "Capture" in HRT Model KP-2B keypad.
+
+- To start a round, press a button, it can take two presses.
+- A light will start from the top right or left and sweep down to the
+  opposite bottom led.
+- Capture the light at position 7, 8, or 9 by pressing the button 9 or
+  10 in the direction of travel.
+- If the light starts at the top left use the bottom right button,
+  if it starts at the top right use the bottom left button
+
+Scoring:
+- Capturing at 8 gives 2 points
+- Capturing at 7 or 9 gives 1 point
+- Any other position is 0 points and you loose a turn, you get 3 turns
+  per try.
+- If you beat the high score all LEDs blink and the score is
+  displayed.
+- A high score is prefixed by both rows of LEDs sweeping from the left
+  to the right.
+- At the end of a round the current score is displayed prefixed by a
+  sweep from the right with both rows of LEDs and the score is displayed
+  three times.
+- Score is displayed 10's first after the lower sweep to 10, 1's
+  second after the upper sweep to 1
+- In the case of a 0 no LEDs are displayed for that digit, in the case
+  of 100 something the LED 10 will illuminate when tens are displayed.
+- The high score can be cleared by holding button 1 and 5 when a score
+  starts to be displayed.
