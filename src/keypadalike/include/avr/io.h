@@ -113,6 +113,8 @@ public:
 	RegObj& operator|=(uint8_t value);
 	RegObj& operator&=(uint8_t value);
 	RegObj& operator^=(uint8_t value);
+	RegObj& operator++();
+	RegObj& operator--();
 	// allow reading back as an integer
 	operator uint8_t();
 private:
@@ -133,6 +135,8 @@ public:
 	RegObj_SREG& operator|=(uint8_t value);
 	RegObj_SREG& operator&=(uint8_t value);
 	RegObj_SREG& operator^=(uint8_t value);
+	RegObj_SREG& operator++();
+	RegObj_SREG& operator--();
 	// allow reading back as an integer
 	operator uint8_t();
 private:
@@ -149,6 +153,8 @@ public:
 	RegObj16& operator|=(uint16_t value);
 	RegObj16& operator&=(uint16_t value);
 	RegObj16& operator^=(uint16_t value);
+	RegObj16& operator++();
+	RegObj16& operator--();
 	// allow reading back as an integer
 	operator uint16_t();
 private:
