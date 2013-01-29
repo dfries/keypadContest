@@ -54,6 +54,9 @@ enum RegEnum
 
 	REG_CLKPR=0x26,
 
+	REG_MCUSR=0x34,
+	REG_WDTCSR=0x21,
+
 	// Timer 0
 	REG_TCCR0A=0x30,
 	REG_TCCR0B=0x33,
@@ -176,6 +179,9 @@ extern RegObj DDRA;
 extern RegObj PORTA;
 
 extern RegObj CLKPR;
+
+extern RegObj MCUSR;
+extern RegObj WDTCSR;
 
 // Timer 0
 extern RegObj TCCR0A;
