@@ -15,10 +15,24 @@ CXXFLAGS=-g -Wall -std=c++11 -MMD -MP $(QT_FLAGS) -Iinclude -DF_CPU=8000000 \
 LD_FLAGS=-L.
 LD_LIBS=$(QT_LIBS) -ldl -lavr_target
 
-#AVR_SRC=../keypadContest/src/cpu_clock/cpu_clock.cc
-#AVR_SRC=../keypadContest/src/input/input.cc
-#AVR_SRC=../keypadContest/src/nato_demo/hrt_example.cc
-AVR_SRC=../keypadContest/src/dfries_capture/capture.cc
+# missing UART emulation
+#AVR_SRC=../internetRadioControl/keypad-serial.c
+
+# Any of the following lines can be given on make's command line to
+# select the target.
+AVR_SRC=../dfries_capture/capture.cc
+#AVR_SRC=../input/input.c
+#AVR_SRC=../cpu_clock/cpu_clock.cc
+#AVR_SRC=../PatternRepeater/PatternRepeater.c
+#AVR_SRC=../blinky/blinky.c
+#AVR_SRC=../bongoHero/hero.c
+#AVR_SRC=../input/input.c
+#AVR_SRC=../nato_demo/hrt_example.c
+#AVR_SRC=../recollection/recollection.c
+#AVR_SRC=../rocketLaunch/rocket-launch.c
+# runs for one turn, but it relies on the watchdog timer to reset for the
+# next run which isn't functional in the emulation
+#AVR_SRC=../super_wack_bros/super_wack_bros.c
 
 all: libavr_target.so keypadalike
 
@@ -32,8 +46,9 @@ keypadalike: \
 	Timer.o moc_Timer.o Timer0.o Timer1.o
 	$(LINK.o) -o $@ $^
 
+# force "-x c++" it to be compiled with C++ to get objects and overloading
 avr_target.o: $(AVR_SRC)
-	$(COMPILE.cc) -fPIC -o $@ $<
+	$(COMPILE.cc) -fPIC -x c++ -o $@ $<
 
 libavr_target.so: avr_target.o
 	$(LINK.cc) -shared $^ $(LOADLIBES) $(LDLIBS) -o $@
