@@ -38,7 +38,7 @@ libavr_target.so: avr_target.o
 
 .PHONY: all clean
 clean:
-	rm -f *.d *.o moc_*.cc moc_*.d moc_*.o keypadalike
+	rm -f *.d *.o moc_*.cc moc_*.d moc_*.o keypadalike libavr_target.so
 
 moc_%.cc: %.h
 	moc -o $@ $^
