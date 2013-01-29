@@ -9,14 +9,16 @@
 QT_FLAGS:=$(shell pkg-config --cflags QtGui) \
 -I/usr/include/QtMobility -I/usr/include/QtMultimediaKit
 QT_LIBS:=$(shell pkg-config --libs QtGui) -lQtMultimediaKit
-CXXFLAGS=-g -Wall -std=c++11 -MMD -MP $(QT_FLAGS) -Iinclude -DF_CPU=8000000
+CXXFLAGS=-g -Wall -std=c++11 -MMD -MP $(QT_FLAGS) -Iinclude -DF_CPU=8000000 \
+
+#	-O2
 LD_FLAGS=-L.
 LD_LIBS=$(QT_LIBS) -ldl -lavr_target
 
 #AVR_SRC=../keypadContest/src/cpu_clock/cpu_clock.cc
 #AVR_SRC=../keypadContest/src/input/input.cc
-AVR_SRC=../keypadContest/src/nato_demo/hrt_example.cc
-#AVR_SRC=../keypadContest/src/dfries_capture/capture.cc
+#AVR_SRC=../keypadContest/src/nato_demo/hrt_example.cc
+AVR_SRC=../keypadContest/src/dfries_capture/capture.cc
 
 all: libavr_target.so keypadalike
 
